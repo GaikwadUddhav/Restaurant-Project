@@ -1,0 +1,47 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-restaurant",
+      "description": "Elegant restaurant interior with warm lighting",
+      "imageUrl": "https://picsum.photos/seed/restaurant-hero/1200/600",
+      "imageHint": "restaurant interior"
+    },
+    {
+      "id": "food-pasta",
+      "description": "Gourmet truffle pasta with parmesan",
+      "imageUrl": "https://picsum.photos/seed/pasta/600/400",
+      "imageHint": "truffle pasta"
+    },
+    {
+      "id": "food-steak",
+      "description": "Seared ribeye steak with rosemary",
+      "imageUrl": "https://picsum.photos/seed/steak/600/400",
+      "imageHint": "ribeye steak"
+    },
+    {
+      "id": "food-salad",
+      "description": "Fresh mediterranean salad with feta",
+      "imageUrl": "https://picsum.photos/seed/salad/600/400",
+      "imageHint": "greek salad"
+    },
+    {
+      "id": "food-dessert",
+      "description": "Chocolate lava cake with berries",
+      "imageUrl": "https://picsum.photos/seed/dessert/600/400",
+      "imageHint": "chocolate cake"
+    },
+    {
+      "id": "food-cocktail",
+      "description": "Signature hibiscus cocktail",
+      "imageUrl": "https://picsum.photos/seed/cocktail/600/400",
+      "imageHint": "craft cocktail"
+    },
+    {
+      "id": "table-setting",
+      "description": "Elegant table setting with linen",
+      "imageUrl": "https://picsum.photos/seed/table/600/400",
+      "imageHint": "dining table"
+    }
+  ]
+}
