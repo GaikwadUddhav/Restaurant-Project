@@ -1,0 +1,524 @@
+{
+  "entities": {
+    "CustomerProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CustomerProfile",
+      "type": "object",
+      "description": "Represents a customer's profile, storing their personal and contact information. This entity does not store authentication credentials, which are handled by an external system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CustomerProfile entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the customer."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the customer."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the customer, used for communication.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The contact phone number of the customer."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "phoneNumber"
+      ]
+    },
+    "RestaurantTable": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "RestaurantTable",
+      "type": "object",
+      "description": "Represents a physical table within the restaurant that can be reserved by customers.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the RestaurantTable entity."
+        },
+        "tableNumber": {
+          "type": "string",
+          "description": "A unique identifier or name for the table (e.g., 'Table 1', 'Booth A')."
+        },
+        "capacity": {
+          "type": "number",
+          "description": "The maximum number of guests that can be seated at this table."
+        },
+        "description": {
+          "type": "string",
+          "description": "An optional description of the table's location or features (e.g., 'Window seat', 'Quiet corner')."
+        }
+      },
+      "required": [
+        "id",
+        "tableNumber",
+        "capacity"
+      ]
+    },
+    "Reservation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reservation",
+      "type": "object",
+      "description": "Records a customer's booking for a specific table at a given date and time, including the mandatory booking fee.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Reservation entity."
+        },
+        "customerId": {
+          "type": "string",
+          "description": "Reference to the CustomerProfile who made the reservation. (Relationship: CustomerProfile 1:N Reservation)"
+        },
+        "tableId": {
+          "type": "string",
+          "description": "Reference to the RestaurantTable being reserved. (Relationship: RestaurantTable 1:N Reservation)"
+        },
+        "reservationDateTime": {
+          "type": "string",
+          "description": "The specific date and time for which the table is reserved.",
+          "format": "date-time"
+        },
+        "numberOfGuests": {
+          "type": "number",
+          "description": "The number of guests expected for this reservation."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the reservation (e.g., 'Pending', 'Confirmed', 'Cancelled', 'Completed', 'No-Show')."
+        },
+        "bookingFeeAmount": {
+          "type": "number",
+          "description": "The mandatory booking fee charged for this reservation (default 50)."
+        },
+        "paymentId": {
+          "type": "string",
+          "description": "Reference to the Payment entity for the booking fee associated with this reservation. (Relationship: Payment 1:1 Reservation)"
+        },
+        "specialRequests": {
+          "type": "string",
+          "description": "Any special requests or notes from the customer regarding the reservation."
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "tableId",
+        "reservationDateTime",
+        "numberOfGuests",
+        "status",
+        "bookingFeeAmount",
+        "paymentId"
+      ]
+    },
+    "MenuCategory": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MenuCategory",
+      "type": "object",
+      "description": "Groups menu items into logical categories (e.g., 'Appetizers', 'Main Courses', 'Drinks') for easier navigation and management.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MenuCategory entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the menu category (e.g., 'Appetizers')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the category."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "MenuItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MenuItem",
+      "type": "object",
+      "description": "Represents a single food or drink item available on the restaurant's digital menu, including its details and image.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MenuItem entity."
+        },
+        "menuCategoryId": {
+          "type": "string",
+          "description": "Reference to the MenuCategory this item belongs to. (Relationship: MenuCategory 1:N MenuItem)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the menu item."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the menu item, potentially generated by AI."
+        },
+        "price": {
+          "type": "number",
+          "description": "The current selling price of the menu item."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL to an image of the menu item, displayed on the website.",
+          "format": "uri"
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "description": "Indicates if the menu item is currently available for ordering."
+        },
+        "allergens": {
+          "type": "array",
+          "description": "A list of known allergens present in the menu item (e.g., 'Gluten', 'Dairy', 'Nuts').",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "menuCategoryId",
+        "name",
+        "description",
+        "price",
+        "imageUrl",
+        "isAvailable"
+      ]
+    },
+    "FoodOrder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FoodOrder",
+      "type": "object",
+      "description": "Represents a customer's food order, containing multiple menu items, and tracking its status from placement to delivery.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the FoodOrder entity."
+        },
+        "customerId": {
+          "type": "string",
+          "description": "Reference to the CustomerProfile who placed the order. (Relationship: CustomerProfile 1:N FoodOrder)"
+        },
+        "orderDateTime": {
+          "type": "string",
+          "description": "The date and time when the order was placed.",
+          "format": "date-time"
+        },
+        "orderType": {
+          "type": "string",
+          "description": "The type of order, e.g., 'Delivery', 'Pickup', 'Dine-in'."
+        },
+        "deliveryAddress": {
+          "type": "string",
+          "description": "The full delivery address for 'Delivery' orders, or pickup location for 'Pickup'."
+        },
+        "deliveryInstructions": {
+          "type": "string",
+          "description": "Any specific instructions for delivery (e.g., 'Leave at door')."
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "The total monetary amount of the order, including all items and any fees/taxes."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the order, allowing owner to track delivery steps (e.g., 'Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled')."
+        },
+        "estimatedDeliveryTime": {
+          "type": "string",
+          "description": "The estimated time for delivery or pickup, for customer and owner tracking.",
+          "format": "date-time"
+        },
+        "paymentId": {
+          "type": "string",
+          "description": "Reference to the Payment entity for the order amount. (Relationship: Payment 1:1 FoodOrder)"
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "orderDateTime",
+        "orderType",
+        "totalAmount",
+        "status",
+        "paymentId"
+      ]
+    },
+    "OrderItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "OrderItem",
+      "type": "object",
+      "description": "Represents a single item included in a FoodOrder, detailing the specific menu item and quantity.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the OrderItem entity."
+        },
+        "foodOrderId": {
+          "type": "string",
+          "description": "Reference to the FoodOrder this item belongs to. (Relationship: FoodOrder 1:N OrderItem)"
+        },
+        "menuItemId": {
+          "type": "string",
+          "description": "Reference to the MenuItem ordered. (Relationship: MenuItem 1:N OrderItem)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "The quantity of the menu item ordered."
+        },
+        "priceAtOrder": {
+          "type": "number",
+          "description": "The price of the item at the time the order was placed, for historical accuracy and in case menu prices change."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Any specific customization notes for this particular item (e.g., 'no pickles', 'extra spicy')."
+        }
+      },
+      "required": [
+        "id",
+        "foodOrderId",
+        "menuItemId",
+        "quantity",
+        "priceAtOrder"
+      ]
+    },
+    "Payment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Payment",
+      "type": "object",
+      "description": "Records details of a monetary transaction, either for a table reservation fee or a food order, handled by an integrated payment gateway.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Payment entity."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "The unique transaction ID provided by the payment gateway for this payment."
+        },
+        "amount": {
+          "type": "number",
+          "description": "The monetary amount of the payment."
+        },
+        "currency": {
+          "type": "string",
+          "description": "The currency of the payment (e.g., 'USD', 'EUR')."
+        },
+        "paymentDateTime": {
+          "type": "string",
+          "description": "The date and time when the payment was successfully processed.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the payment (e.g., 'Successful', 'Failed', 'Refunded', 'Pending')."
+        },
+        "paymentPurpose": {
+          "type": "string",
+          "description": "Indicates the purpose of the payment (e.g., 'ReservationFee', 'FoodOrder')."
+        },
+        "reservationId": {
+          "type": "string",
+          "description": "Reference to the Reservation this payment is for, if applicable. (Relationship: Payment 1:1 Reservation)"
+        },
+        "foodOrderId": {
+          "type": "string",
+          "description": "Reference to the FoodOrder this payment is for, if applicable. (Relationship: Payment 1:1 FoodOrder)"
+        }
+      },
+      "required": [
+        "id",
+        "transactionId",
+        "amount",
+        "currency",
+        "paymentDateTime",
+        "status",
+        "paymentPurpose"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/customerProfiles/{customerId}",
+        "definition": {
+          "entityName": "CustomerProfile",
+          "schema": {
+            "$ref": "#/backend/entities/CustomerProfile"
+          },
+          "description": "Stores a customer's personal and contact information. Only the customer themselves can access their profile. The `customerId` matches `request.auth.uid`.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique ID of the customer, matching the Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/restaurantTables/{tableId}",
+        "definition": {
+          "entityName": "RestaurantTable",
+          "schema": {
+            "$ref": "#/backend/entities/RestaurantTable"
+          },
+          "description": "Represents physical tables in the restaurant. Publicly readable for reservation viewing, but only restaurant owners can create, update, or delete.",
+          "params": [
+            {
+              "name": "tableId",
+              "description": "The unique ID of the restaurant table."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/customerProfiles/{customerId}/reservations/{reservationId}",
+        "definition": {
+          "entityName": "Reservation",
+          "schema": {
+            "$ref": "#/backend/entities/Reservation"
+          },
+          "description": "Stores a customer's table reservation. Includes `customerId` for authorization independence, ensuring only the customer or an owner can access it.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique ID of the customer who made the reservation, matching the Firebase Authentication UID."
+            },
+            {
+              "name": "reservationId",
+              "description": "The unique ID of the reservation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/menuCategories/{categoryId}",
+        "definition": {
+          "entityName": "MenuCategory",
+          "schema": {
+            "$ref": "#/backend/entities/MenuCategory"
+          },
+          "description": "Groups menu items into categories. Publicly readable for browsing, but only restaurant owners can manage categories.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "The unique ID of the menu category."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/menuItems/{menuItemId}",
+        "definition": {
+          "entityName": "MenuItem",
+          "schema": {
+            "$ref": "#/backend/entities/MenuItem"
+          },
+          "description": "Represents a single food or drink item on the menu. Publicly readable, includes `imageUrl` and `isAvailable` status. Only restaurant owners can manage items.",
+          "params": [
+            {
+              "name": "menuItemId",
+              "description": "The unique ID of the menu item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/customerProfiles/{customerId}/foodOrders/{foodOrderId}",
+        "definition": {
+          "entityName": "FoodOrder",
+          "schema": {
+            "$ref": "#/backend/entities/FoodOrder"
+          },
+          "description": "Represents a customer's food order. Includes `customerId` for authorization independence, ensuring only the customer or an owner can access it.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique ID of the customer who placed the order, matching the Firebase Authentication UID."
+            },
+            {
+              "name": "foodOrderId",
+              "description": "The unique ID of the food order."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/customerProfiles/{customerId}/foodOrders/{foodOrderId}/orderItems/{orderItemId}",
+        "definition": {
+          "entityName": "OrderItem",
+          "schema": {
+            "$ref": "#/backend/entities/OrderItem"
+          },
+          "description": "Details a specific item within a food order. Includes denormalized `customerId` and `foodOrderId` for authorization independence and efficient collection group queries.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique ID of the customer who placed the order."
+            },
+            {
+              "name": "foodOrderId",
+              "description": "The unique ID of the food order this item belongs to."
+            },
+            {
+              "name": "orderItemId",
+              "description": "The unique ID of the order item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/payments/{paymentId}",
+        "definition": {
+          "entityName": "Payment",
+          "schema": {
+            "$ref": "#/backend/entities/Payment"
+          },
+          "description": "Records details of a monetary transaction. Includes denormalized `customerId` (from the associated reservation or food order) for authorization independence, allowing customer-specific access and owner-level management.",
+          "params": [
+            {
+              "name": "paymentId",
+              "description": "The unique ID of the payment transaction."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/appRoles_owner/{ownerId}",
+        "definition": {
+          "entityName": "AppRoles_Owner",
+          "schema": {
+            "$ref": "#/backend/entities/CustomerProfile"
+          },
+          "description": "Stores UIDs of restaurant owners for role-based access control. Documents in this collection simply have their ID as the `ownerId`. Used for authorization checks (DBAC - Existence over Content).",
+          "params": [
+            {
+              "name": "ownerId",
+              "description": "The unique ID of a restaurant owner, matching their Firebase Authentication UID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure for TableTap prioritizes secure, scalable, and debuggable authorization by strictly adhering to the core design principles and mandates. \n\n**Authorization Independence via Denormalization (Mandate A):**\nThis is achieved primarily by ensuring that authorization context is present within each document, eliminating the need for `get()` calls in security rules, which can break atomic operations and complicate debugging. \n*   For user-specific nested data like `Reservation` and `FoodOrder` documents, which reside under `/customerProfiles/{customerId}/reservations/{reservationId}` and `/customerProfiles/{customerId}/foodOrders/{foodOrderId}` respectively, the `customerId` field is explicitly included in the document. This allows security rules to directly compare `request.auth.uid` with `resource.data.customerId` for ownership verification without traversing parent documents.\n*   For `OrderItem` documents, which are nested deeper (`/customerProfiles/{customerId}/foodOrders/{foodOrderId}/orderItems/{orderItemId}`), the `customerId` (from its grandparent `FoodOrder`) and `foodOrderId` (from its parent `FoodOrder`) are denormalized into each `OrderItem` document. This enables robust, independent security rules and efficient collection group queries for owners.\n*   The `Payment` entity, which can be linked to either a `Reservation` or a `FoodOrder`, is placed in a top-level collection (`/payments/{paymentId}`). To maintain authorization independence, the `customerId` associated with the payment (derived from the corresponding reservation or food order) is explicitly denormalized into each `Payment` document. This allows customers to view their own payments and owners to view all payments without complex `get()` calls.\n\n**Structural Segregation (Mandate B):**\nCollections are designed so that all documents within them share a homogeneous security posture, simplifying rules and improving clarity. \n*   `/customerProfiles/{customerId}/...` paths are strictly private to the authenticated user and/or accessible by owners.\n*   `/restaurantTables`, `/menuCategories`, and `/menuItems` are public-read collections, while write access is restricted to authenticated owners, defined by a separate role collection.\n*   `/payments` is a top-level collection but restricted to the associated customer or owner. \n*   `/appRoles_owner` serves as a dedicated collection for storing owner UIDs, making role-based access control (DBAC) explicit and easy to check via `exists()`.\n\n**Access Modeling (Mandate C):**\n*   **Private Data & Hierarchical Paths:** Customer-owned data (`CustomerProfile`, `Reservation`, `FoodOrder`, `OrderItem`) follows hierarchical paths like `/customerProfiles/{customerId}/reservations/{reservationId}`, enforcing strong ownership based on `request.auth.uid` matching the path wildcard. This is extended to `OrderItem` for granular control.\n*   **Global Roles (DBAC):** The `/appRoles_owner/{ownerId}` collection implements DBAC using the 'Existence over Content' principle. An owner's role is determined by the existence of their UID as a document ID in this collection, enabling simple and performant rule checks (e.g., `exists(/databases/$(database)/documents/appRoles_owner/$(request.auth.uid))`).\n\n**QAPs (Rules are not Filters):**\nThe structure supports efficient and secure `list` operations (Queries Are Not Filters) by design:\n*   **Customer-specific data:** By nesting customer data under `/customerProfiles/{customerId}/...` and including `customerId` in each document, customers can query their own data (e.g., `db.collection('customerProfiles').doc(uid).collection('reservations').get()`) with a simple rule `allow list: if request.auth.uid == customerId;`. The query path matches the rule, ensuring only owned data is returned.\n*   **Owner visibility:** For the owner's dashboard, collection group queries (e.g., `db.collectionGroup('reservations').where('status', '==', 'Pending').get()`) can be used to retrieve data across all customers. The denormalized `customerId` (and `foodOrderId` for `OrderItem`) within each document, combined with checks against the `/appRoles_owner` collection, allows rules to efficiently distinguish between owner access and customer access without filtering, thus upholding QAPs. For public collections, `allow list: true;` provides efficient global access. \n\nThis robust design ensures security rules are simple, atomic operations are protected, and both user-specific and aggregate queries perform optimally without risking data leakage or rule complexity."
+  }
+}

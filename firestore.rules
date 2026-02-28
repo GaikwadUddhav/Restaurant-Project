@@ -1,0 +1,172 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * TABLETAP SECURITY RULES
+     * 
+     * Core Philosophy:
+     * This ruleset enforces a hybrid security model: strict user-ownership for personal 
+     * data (profiles, reservations, orders) and role-based access control (DBAC) for 
+     * administrative tasks (menu management, table configuration).
+     * 
+     * Data Structure:
+     * - User-specific data is nested hierarchically under /customerProfiles/{customerId}.
+     * - Publicly browsable content (tables, categories, items) resides in top-level collections.
+     * - Roles are managed via the /appRoles_owner collection using the 'Existence over Content' principle.
+     * 
+     * Key Security Decisions:
+     * - Denormalization for Authorization: Critical IDs (like customerId) are duplicated inside 
+     *   documents to allow rules to evaluate permissions without costly get() calls.
+     * - DBAC: Restaurant owner permissions are verified by checking for the existence of 
+     *   the user's UID in the 'appRoles_owner' collection.
+     * - Prototyping Flexibility: Logic enforces "who" can access data and "relational integrity" 
+     *   (ensuring IDs match), but does not restrict the specific fields or data types of the content.
+     */
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    /** @description Checks if the request is from an authenticated user. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** @description Checks if the authenticated user's UID matches the provided userId. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** @description Checks if the authenticated user is registered as a restaurant owner. */
+    function isRestaurantOwner() {
+      return isSignedIn() && exists(/databases/$(database)/documents/appRoles_owner/$(request.auth.uid));
+    }
+
+    /** @description Combines ownership check with existence check for updates/deletes. */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    /** @description Checks if the user is a restaurant owner and the document exists. */
+    function isExistingRestaurantOwner() {
+      return resource != null && isRestaurantOwner();
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for user profile management. Users manage their own profiles; Owners can view.
+     * @path /customerProfiles/{customerId}
+     * @allow (create) User with UID 'abc' creating /customerProfiles/abc
+     * @deny (create) User with UID 'abc' creating /customerProfiles/xyz
+     * @principle Self-creation and path-based ownership.
+     */
+    match /customerProfiles/{customerId} {
+      allow get, list: if isOwner(customerId) || isRestaurantOwner();
+      allow create: if isOwner(customerId) && request.resource.data.id == customerId;
+      allow update: if isExistingOwner(customerId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(customerId) || isExistingRestaurantOwner();
+
+      /**
+       * @description Secured reservations nested under a customer.
+       * @path /customerProfiles/{customerId}/reservations/{reservationId}
+       * @allow (create) User 'abc' creating a reservation under their own profile.
+       * @deny (list) User 'abc' attempting to list reservations for customer 'xyz'.
+       * @principle Hierarchical ownership and denormalized field validation.
+       */
+      match /reservations/{reservationId} {
+        allow get, list: if isOwner(customerId) || isRestaurantOwner();
+        allow create: if isOwner(customerId) && request.resource.data.customerId == customerId;
+        allow update, delete: if (isExistingOwner(customerId) || isExistingRestaurantOwner());
+      }
+
+      /**
+       * @description Food orders placed by the customer.
+       * @path /customerProfiles/{customerId}/foodOrders/{foodOrderId}
+       * @allow (get) Customer 'abc' viewing their own order.
+       * @deny (update) Customer 'abc' trying to change the customerId on an existing order.
+       * @principle Immutable relational fields and ownership verification.
+       */
+      match /foodOrders/{foodOrderId} {
+        allow get, list: if isOwner(customerId) || isRestaurantOwner();
+        allow create: if isOwner(customerId) && request.resource.data.customerId == customerId;
+        allow update: if (isExistingOwner(customerId) || isExistingRestaurantOwner()) 
+                      && request.resource.data.customerId == resource.data.customerId;
+        allow delete: if isExistingOwner(customerId) || isExistingRestaurantOwner();
+
+        /**
+         * @description Line items within a specific food order.
+         * @path /customerProfiles/{customerId}/foodOrders/{foodOrderId}/orderItems/{orderItemId}
+         * @allow (create) Adding an item to the user's own order.
+         * @principle Path-consistency enforcement.
+         */
+        match /orderItems/{orderItemId} {
+          allow get, list: if isOwner(customerId) || isRestaurantOwner();
+          allow create: if isOwner(customerId) 
+                        && request.resource.data.foodOrderId == foodOrderId;
+          allow update, delete: if (isExistingOwner(customerId) || isExistingRestaurantOwner());
+        }
+      }
+    }
+
+    /**
+     * @description Physical tables in the restaurant.
+     * @path /restaurantTables/{tableId}
+     * @allow (get) Any user viewing table availability.
+     * @deny (create) Non-owner attempting to add a new table.
+     * @principle Public read with role-restricted writes.
+     */
+    match /restaurantTables/{tableId} {
+      allow get, list: if true;
+      allow create, update, delete: if isRestaurantOwner();
+    }
+
+    /**
+     * @description Categories for the digital menu.
+     * @path /menuCategories/{categoryId}
+     * @allow (list) Public browsing of menu categories.
+     * @principle Public read with role-restricted writes.
+     */
+    match /menuCategories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isRestaurantOwner();
+    }
+
+    /**
+     * @description Individual food and drink items.
+     * @path /menuItems/{menuItemId}
+     * @allow (get) Public viewing of item details and images.
+     * @principle Public read with role-restricted writes.
+     */
+    match /menuItems/{menuItemId} {
+      allow get, list: if true;
+      allow create, update, delete: if isRestaurantOwner();
+    }
+
+    /**
+     * @description Financial transactions for orders or reservations.
+     * @path /payments/{paymentId}
+     * @allow (get) A customer viewing their specific payment record.
+     * @deny (list) A customer trying to list all payments in the system.
+     * @principle Ownership via denormalized field; admin-only listing.
+     */
+    match /payments/{paymentId} {
+      allow get: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isRestaurantOwner();
+      allow list: if isRestaurantOwner();
+      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+      allow update, delete: if isExistingRestaurantOwner();
+    }
+
+    /**
+     * @description Registry of UIDs that have administrative/owner privileges.
+     * @path /appRoles_owner/{ownerId}
+     * @allow (get) Signed-in users checking if a specific UID is an owner.
+     * @deny (write) Any client-side write to roles.
+     * @principle Database-wide role management (Existence over Content).
+     */
+    match /appRoles_owner/{ownerId} {
+      allow get: if isSignedIn();
+      allow list: if isRestaurantOwner();
+      allow create, update, delete: if false; // Roles usually managed via Admin SDK/Console
+    }
+  }
+}
