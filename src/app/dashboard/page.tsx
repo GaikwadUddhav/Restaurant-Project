@@ -6,11 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Utensils, Calendar, MapPin, CheckCircle, Clock, Sparkles, Loader2 } from "lucide-react";
+import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2 } from "lucide-react";
 import { generateMenuDescription } from "@/ai/flows/generate-menu-description";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -232,7 +231,10 @@ export default function DashboardPage() {
                 {aiResult && (
                   <Button variant="outline" className="mt-4 w-full" onClick={() => {
                     navigator.clipboard.writeText(aiResult);
-                    alert("Copied to clipboard!");
+                    toast({
+                      title: "Copied!",
+                      description: "Description copied to clipboard.",
+                    });
                   }}>
                     Copy to Clipboard
                   </Button>

@@ -20,7 +20,7 @@ export default function ReservationPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Setting the initial date on mount to avoid hydration mismatch
+    // Avoid hydration mismatch by setting initial state after mount
     setDate(new Date());
   }, []);
 
