@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Users, Clock, CalendarDays, CheckCircle2 } from "lucide-react";
+import { CreditCard, Clock, CalendarDays, CheckCircle2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 export default function ReservationPage() {
@@ -77,7 +78,7 @@ export default function ReservationPage() {
             </div>
           </div>
           <Button asChild className="w-full font-headline">
-            <a href="/">Return Home</a>
+            <Link href="/">Return Home</Link>
           </Button>
         </div>
       </div>
@@ -92,7 +93,6 @@ export default function ReservationPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-        {/* Selection Column */}
         <div className="lg:col-span-2 space-y-8">
           <Card>
             <CardHeader>
@@ -143,7 +143,6 @@ export default function ReservationPage() {
           </Card>
         </div>
 
-        {/* Summary Column */}
         <div className="space-y-6">
           <Card className="sticky top-24 border-primary/20 bg-primary/5">
             <CardHeader>
