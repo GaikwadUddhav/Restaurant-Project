@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,12 +11,17 @@ import { CreditCard, Users, Clock, CalendarDays, CheckCircle2 } from "lucide-rea
 import { Separator } from "@/components/ui/separator";
 
 export default function ReservationPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [guests, setGuests] = useState("2");
   const [time, setTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Setting the initial date on mount to avoid hydration mismatch
+    setDate(new Date());
+  }, []);
 
   const handleBooking = () => {
     if (!date || !time) {

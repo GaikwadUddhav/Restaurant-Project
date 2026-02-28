@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-restaurant",
+      "description": "Elegant restaurant interior with warm lighting",
+      "imageUrl": "https://images.unsplash.com/photo-1667388969250-1c7220bf3f37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXN0YXVyYW50JTIwaW50ZXJpb3J8ZW58MHx8fHwxNzcyMjU4MTg0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "restaurant interior"
+    },
+    {
+      "id": "food-pasta",
+      "description": "Gourmet truffle pasta with parmesan",
+      "imageUrl": "https://images.unsplash.com/photo-1729875746931-c5edc5ec6468?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1ZmZsZSUyMHBhc3RhfGVufDB8fHx8MTc3MjIwODkwOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "truffle pasta"
+    },
+    {
+      "id": "food-steak",
+      "description": "Seared ribeye steak with rosemary",
+      "imageUrl": "https://images.unsplash.com/photo-1690983322025-aab4f95a0269?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxyaWJleWUlMjBzdGVha3xlbnwwfHx8fDE3NzIzMDMzNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ribeye steak"
+    },
+    {
+      "id": "food-salad",
+      "description": "Fresh mediterranean salad with feta",
+      "imageUrl": "https://images.unsplash.com/photo-1599021419847-d8a7a6aba5b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmVlayUyMHNhbGFkfGVufDB8fHx8MTc3MjMwMzM1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "greek salad"
+    },
+    {
+      "id": "food-dessert",
+      "description": "Chocolate lava cake with berries",
+      "imageUrl": "https://images.unsplash.com/photo-1626263468007-a9e0cf83f1ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaG9jb2xhdGUlMjBjYWtlfGVufDB8fHx8MTc3MjIxODc1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chocolate cake"
+    },
+    {
+      "id": "food-cocktail",
+      "description": "Signature hibiscus cocktail",
+      "imageUrl": "https://images.unsplash.com/photo-1614285344553-fbb89a8e68ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjcmFmdCUyMGNvY2t0YWlsfGVufDB8fHx8MTc3MjMwMzM1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "craft cocktail"
+    },
+    {
+      "id": "table-setting",
+      "description": "Elegant table setting with linen",
+      "imageUrl": "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkaW5pbmclMjB0YWJsZXxlbnwwfHx8fDE3NzIzMDMzNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dining table"
+    }
+  ]
 }
