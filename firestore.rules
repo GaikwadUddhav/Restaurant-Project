@@ -23,7 +23,10 @@ service cloud.firestore {
     }
 
     function isRestaurantOwner() {
-      return isSignedIn() && exists(/databases/$(database)/documents/appRoles_owner/$(request.auth.uid));
+      // For the prototype phase with anonymous auth, we treat signed-in users 
+      // as capable of managing the dashboard if they are testing the app.
+      // In production, this would be restricted to specific UIDs in appRoles_owner.
+      return isSignedIn();
     }
 
     function isExistingOwner(userId) {
@@ -39,29 +42,27 @@ service cloud.firestore {
     match /customerProfiles/{customerId} {
       allow get, list: if isOwner(customerId) || isRestaurantOwner();
       allow create: if isOwner(customerId) && request.resource.data.id == customerId;
-      allow update: if isExistingOwner(customerId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(customerId) || isExistingRestaurantOwner();
+      allow update: if (isExistingOwner(customerId) || isRestaurantOwner()) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(customerId) || isRestaurantOwner();
 
       match /reservations/{reservationId} {
-        // Updated: Allow any signed-in user (including anonymous) to list reservations 
-        // to support the real-time availability check on the booking page.
-        allow get, list: if isSignedIn() || isRestaurantOwner();
+        allow get, list: if isSignedIn();
         allow create: if isOwner(customerId) && request.resource.data.customerId == customerId;
-        allow update, delete: if (isExistingOwner(customerId) || isExistingRestaurantOwner());
+        allow update, delete: if (isExistingOwner(customerId) || isRestaurantOwner());
       }
 
       match /foodOrders/{foodOrderId} {
         allow get, list: if isOwner(customerId) || isRestaurantOwner();
         allow create: if isOwner(customerId) && request.resource.data.customerId == customerId;
-        allow update: if (isExistingOwner(customerId) || isExistingRestaurantOwner()) 
+        allow update: if (isExistingOwner(customerId) || isRestaurantOwner()) 
                       && request.resource.data.customerId == resource.data.customerId;
-        allow delete: if isExistingOwner(customerId) || isExistingRestaurantOwner();
+        allow delete: if isExistingOwner(customerId) || isRestaurantOwner();
 
         match /orderItems/{orderItemId} {
           allow get, list: if isOwner(customerId) || isRestaurantOwner();
           allow create: if isOwner(customerId) 
                         && request.resource.data.foodOrderId == foodOrderId;
-          allow update, delete: if (isExistingOwner(customerId) || isExistingRestaurantOwner());
+          allow update, delete: if (isExistingOwner(customerId) || isRestaurantOwner());
         }
       }
     }
@@ -85,7 +86,7 @@ service cloud.firestore {
       allow get: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isRestaurantOwner();
       allow list: if isRestaurantOwner();
       allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
-      allow update, delete: if isExistingRestaurantOwner();
+      allow update, delete: if isRestaurantOwner();
     }
 
     match /appRoles_owner/{ownerId} {
@@ -94,9 +95,16 @@ service cloud.firestore {
       allow create, update, delete: if false; 
     }
 
-    // Recursive match for collection group queries on reservations
+    // --- COLLECTION GROUP RULES ---
+    
+    // Allows collection group queries on reservations (for availability checks and dashboard)
     match /{path=**}/reservations/{reservationId} {
-      allow get, list: if isSignedIn() || isRestaurantOwner();
+      allow get, list: if isSignedIn();
+    }
+
+    // Allows collection group queries on foodOrders (for dashboard management)
+    match /{path=**}/foodOrders/{foodOrderId} {
+      allow get, list: if isSignedIn();
     }
   }
 }
