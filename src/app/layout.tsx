@@ -1,8 +1,8 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
   title: 'Patil Table | Exquisite Dining & Table Reservations',
@@ -22,17 +22,19 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Belleza&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-          {children}
-        </main>
-        <footer className="py-8 border-t bg-card mt-auto">
-          <div className="container mx-auto px-4 text-center">
-            <p className="font-headline text-2xl text-primary mb-2">Patil Table</p>
-            <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Patil Table Fine Dining. All rights reserved.</p>
-          </div>
-        </footer>
-        <Toaster />
+        <FirebaseClientProvider>
+          <Navbar />
+          <main className="flex-1">
+            {children}
+          </main>
+          <footer className="py-8 border-t bg-card mt-auto">
+            <div className="container mx-auto px-4 text-center">
+              <p className="font-headline text-2xl text-primary mb-2">Patil Table</p>
+              <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Patil Table Fine Dining. All rights reserved.</p>
+            </div>
+          </footer>
+          <Toaster />
+        </FirebaseClientProvider>
       </body>
     </html>
   );
