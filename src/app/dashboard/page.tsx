@@ -26,13 +26,13 @@ export default function DashboardPage() {
   ]);
 
   const [orders, setOrders] = useState([
-    { id: "ORD-001", customer: "Alice Brown", total: "$84.00", items: "2x Pasta, 1x Drink", status: "Preparing" },
-    { id: "ORD-002", customer: "Bob Wilson", total: "$45.00", items: "1x Steak", status: "Delivery" },
-    { id: "ORD-003", customer: "Charlie Davis", total: "$28.00", items: "1x Pasta", status: "Delivered" },
+    { id: "ORD-001", customer: "Alice Brown", total: "$84.00", items: "2x Butter Chicken, 1x Naan", status: "Preparing" },
+    { id: "ORD-002", customer: "Bob Wilson", total: "$45.00", items: "1x Biryani", status: "Delivery" },
+    { id: "ORD-003", customer: "Charlie Davis", total: "$28.00", items: "1x Paneer Tikka", status: "Delivered" },
   ]);
 
   // AI State
-  const [aiInput, setAiInput] = useState({ itemName: "", ingredients: "", cuisine: "" });
+  const [aiInput, setAiInput] = useState({ itemName: "", ingredients: "", cuisine: "Indian" });
   const [aiResult, setAiResult] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -78,7 +78,7 @@ export default function DashboardPage() {
       .then(() => {
         setNewTable({ tableNumber: "", capacity: 2, description: "" });
         setIsAddingTable(false);
-        toast({ title: "Table Added", description: `Table ${newTable.tableNumber} is now available.` });
+        toast({ title: "Table Added", description: `Table ${newTable.tableNumber} is now available for booking.` });
       })
       .catch(() => setIsAddingTable(false));
   };
@@ -86,7 +86,7 @@ export default function DashboardPage() {
   const handleDeleteTable = (id: string) => {
     const tableRef = doc(db, "restaurantTables", id);
     deleteDocumentNonBlocking(tableRef);
-    toast({ title: "Table Removed", description: "The table has been deleted." });
+    toast({ title: "Table Removed", description: "The table has been deleted from the floor plan." });
   };
 
   return (
@@ -94,7 +94,7 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
         <div>
           <h1 className="font-headline text-5xl mb-2 text-primary">Owner Dashboard</h1>
-          <p className="text-muted-foreground">Manage your restaurant operations and menus.</p>
+          <p className="text-muted-foreground">Manage Patil Table Indian restaurant operations.</p>
         </div>
         <Badge variant="outline" className="text-sm px-4 py-1 border-primary/30">
           Store Status: <span className="text-green-600 font-bold ml-1">Open</span>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-primary" /> Active Food Orders
               </CardTitle>
-              <CardDescription>Real-time delivery and pickup management.</CardDescription>
+              <CardDescription>Real-time Indian cuisine delivery management.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" /> Reservation Requests
               </CardTitle>
-              <CardDescription>Manage table occupancy and booking fees.</CardDescription>
+              <CardDescription>Manage Patil Table seating and booking fees.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -199,7 +199,9 @@ export default function DashboardPage() {
                       </TableCell>
                       <TableCell>{booking.guests}</TableCell>
                       <TableCell>
-                        <Badge variant={booking.status === "Confirmed" ? "default" : "outline"}>
+                        <Badge className={cn(
+                          booking.status === "Confirmed" ? "bg-green-100 text-green-700" : "bg-muted"
+                        )}>
                           {booking.status}
                         </Badge>
                       </TableCell>
@@ -221,7 +223,7 @@ export default function DashboardPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2">
                   <Plus className="h-5 w-5 text-primary" /> Add New Table
                 </CardTitle>
-                <CardDescription>Define table capacity and numbers.</CardDescription>
+                <CardDescription>Define table capacity and numbers for Patil Table.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -250,9 +252,9 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={handleAddTable} disabled={isAddingTable}>
+                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleAddTable} disabled={isAddingTable}>
                   {isAddingTable ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-                  Add Table
+                  Register Table
                 </Button>
               </CardFooter>
             </Card>
@@ -262,7 +264,7 @@ export default function DashboardPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2">
                   <LayoutGrid className="h-5 w-5 text-primary" /> Floor Plan Management
                 </CardTitle>
-                <CardDescription>Your current available seating arrangements.</CardDescription>
+                <CardDescription>Current seating available for Indian dining reservations.</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingTables ? (
@@ -276,15 +278,19 @@ export default function DashboardPage() {
                         <TableHead>Table</TableHead>
                         <TableHead>Capacity</TableHead>
                         <TableHead>Features</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {tables?.map((table) => (
                         <TableRow key={table.id}>
-                          <TableCell className="font-bold">{table.tableNumber}</TableCell>
+                          <TableCell className="font-bold text-green-800">{table.tableNumber}</TableCell>
                           <TableCell>{table.capacity} People</TableCell>
                           <TableCell className="text-xs italic">{table.description || "-"}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-white text-green-600 border-green-200">Available</Badge>
+                          </TableCell>
                           <TableCell>
                             <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
                               <Trash2 className="h-4 w-4 text-destructive" />
@@ -307,7 +313,7 @@ export default function DashboardPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-secondary" /> AI Menu Description Tool
                 </CardTitle>
-                <CardDescription>Generate enticing descriptions for your new dishes.</CardDescription>
+                <CardDescription>Generate enticing Indian menu descriptions.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -329,13 +335,13 @@ export default function DashboardPage() {
                 <div className="space-y-2">
                   <Label>Cuisine Style (optional)</Label>
                   <Input 
-                    placeholder="Italian, Fusion..." 
+                    placeholder="Indian, Fusion..." 
                     value={aiInput.cuisine}
                     onChange={e => setAiInput({...aiInput, cuisine: e.target.value})}
                   />
                 </div>
                 <Button 
-                  className="w-full font-headline" 
+                  className="w-full font-headline bg-primary" 
                   onClick={handleGenerateAI}
                   disabled={isGenerating || !aiInput.itemName}
                 >

@@ -96,10 +96,10 @@ export default function ReservationPage() {
     return (
       <div className="container mx-auto px-4 py-20 max-w-2xl text-center">
         <div className="bg-card border rounded-3xl p-12 shadow-sm">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="h-12 w-12 text-green-600" />
           </div>
-          <h1 className="font-headline text-4xl mb-4">Reservation Confirmed!</h1>
+          <h1 className="font-headline text-4xl mb-4 text-green-700">Reservation Confirmed!</h1>
           <p className="text-muted-foreground mb-8 text-lg">
             Thank you for choosing Patil Table. We've reserved <strong>{selectedTable?.tableNumber}</strong> for you.
           </p>
@@ -123,7 +123,7 @@ export default function ReservationPage() {
               </div>
             </div>
           </div>
-          <Button asChild className="w-full font-headline">
+          <Button asChild className="w-full font-headline bg-green-600 hover:bg-green-700">
             <Link href="/">Return Home</Link>
           </Button>
         </div>
@@ -135,13 +135,13 @@ export default function ReservationPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="font-headline text-5xl mb-2 text-primary">Book a Table</h1>
-        <p className="text-muted-foreground text-lg">Real-time availability for an exquisite dining experience.</p>
+        <p className="text-muted-foreground text-lg">Real-time availability for an exquisite Indian dining experience.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
         <div className="lg:col-span-2 space-y-8">
           {/* Step 1: Basic Info */}
-          <Card>
+          <Card className="bg-white">
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" /> 1. Select Date & Guests
@@ -153,14 +153,14 @@ export default function ReservationPage() {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="rounded-md border mx-auto"
+                  className="rounded-md border mx-auto bg-white"
                 />
               </div>
               <div className="flex-1 space-y-6">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2"><Users className="h-4 w-4" /> Number of Guests</Label>
                   <Select value={guests} onValueChange={(v) => { setGuests(v); setSelectedTableId(""); }}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white">
                       <SelectValue placeholder="How many people?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -177,7 +177,7 @@ export default function ReservationPage() {
                       <Button
                         key={t}
                         variant={time === t ? "default" : "outline"}
-                        className="font-body"
+                        className={cn("font-body", time === t ? "bg-green-600 hover:bg-green-700" : "bg-white")}
                         onClick={() => setTime(t)}
                       >
                         {t}
@@ -190,7 +190,7 @@ export default function ReservationPage() {
           </Card>
 
           {/* Step 2: Table Selection */}
-          <Card className={!date || !time ? "opacity-50 pointer-events-none" : ""}>
+          <Card className={cn("bg-white", !date || !time ? "opacity-50 pointer-events-none" : "")}>
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <UtensilsCrossed className="h-5 w-5 text-primary" /> 2. Choose Your Table
@@ -207,15 +207,23 @@ export default function ReservationPage() {
                       key={table.id}
                       onClick={() => setSelectedTableId(table.id)}
                       className={cn(
-                        "flex flex-col p-4 border rounded-2xl text-left transition-all hover:border-primary/50",
-                        selectedTableId === table.id ? "bg-primary/5 border-primary ring-2 ring-primary/20" : "bg-card"
+                        "flex flex-col p-4 border rounded-2xl text-left transition-all hover:shadow-md",
+                        selectedTableId === table.id 
+                          ? "bg-green-50 border-green-500 ring-2 ring-green-200" 
+                          : "bg-white border-border"
                       )}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-headline text-xl">{table.tableNumber}</span>
-                        <span className="text-xs bg-muted px-2 py-0.5 rounded-full">Cap: {table.capacity}</span>
+                        <span className={cn("font-headline text-xl", selectedTableId === table.id ? "text-green-800" : "")}>
+                          {table.tableNumber}
+                        </span>
+                        <span className={cn("text-xs px-2 py-0.5 rounded-full", selectedTableId === table.id ? "bg-green-200 text-green-800" : "bg-muted")}>
+                          Cap: {table.capacity}
+                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground leading-snug">{table.description || "Perfect for intimate dining."}</p>
+                      <p className={cn("text-sm leading-snug", selectedTableId === table.id ? "text-green-700" : "text-muted-foreground")}>
+                        {table.description || "Perfect for intimate Indian dining."}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -232,9 +240,9 @@ export default function ReservationPage() {
 
         {/* Sidebar Summary */}
         <div className="space-y-6">
-          <Card className="sticky top-24 border-primary/20 bg-primary/5 shadow-lg">
+          <Card className="sticky top-24 border-green-200 bg-green-50 shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Your Booking</CardTitle>
+              <CardTitle className="font-headline text-2xl text-green-800">Your Booking</CardTitle>
               <CardDescription>Reservation summary</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -252,29 +260,29 @@ export default function ReservationPage() {
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Table:</span>
-                <span className="font-medium">
+                <span className="font-medium text-green-700">
                   {allTables?.find(t => t.id === selectedTableId)?.tableNumber || "---"}
                 </span>
               </div>
-              <Separator />
-              <div className="flex justify-between items-center font-bold text-lg pt-2">
+              <Separator className="bg-green-200" />
+              <div className="flex justify-between items-center font-bold text-lg pt-2 text-green-900">
                 <span>Reservation Fee:</span>
-                <span className="text-primary">$50.00</span>
+                <span>$50.00</span>
               </div>
               <div className="pt-4">
                 <Button 
-                  className="w-full font-headline py-6 text-lg" 
+                  className="w-full font-headline py-6 text-lg bg-green-600 hover:bg-green-700" 
                   size="lg"
                   disabled={isSubmitting || !selectedTableId || isUserLoading}
                   onClick={handleBooking}
                 >
                   {isSubmitting ? "Processing..." : (
                     <span className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5" /> Confirm & Pay $50
+                      <CreditCard className="h-5 w-5" /> Confirm & Book Table
                     </span>
                   )}
                 </Button>
-                <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-widest font-bold">
+                <p className="text-[10px] text-center text-green-700 mt-4 uppercase tracking-widest font-bold">
                   Secure Encrypted Payment
                 </p>
               </div>
