@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Utensils, Calendar, ShoppingBag, User, LayoutDashboard, Menu } from "lucide-react";
+import { Utensils, Calendar, ShoppingBag, LayoutDashboard, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -24,7 +24,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="font-headline text-2xl font-bold text-primary">TableTap</span>
+          <span className="font-headline text-2xl font-bold text-primary">Patil Table</span>
         </Link>
 
         {/* Desktop Navigation */}

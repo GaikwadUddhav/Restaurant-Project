@@ -5,8 +5,8 @@ import { Navbar } from '@/components/navbar';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'TableTap | Exquisite Dining & Table Reservations',
-  description: 'Book your table and order delicious food at TableTap.',
+  title: 'Patil Table | Exquisite Dining & Table Reservations',
+  description: 'Book your table and order delicious food at Patil Table.',
 };
 
 export default function RootLayout({
@@ -28,8 +28,8 @@ export default function RootLayout({
         </main>
         <footer className="py-8 border-t bg-card mt-auto">
           <div className="container mx-auto px-4 text-center">
-            <p className="font-headline text-2xl text-primary mb-2">TableTap</p>
-            <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} TableTap Fine Dining. All rights reserved.</p>
+            <p className="font-headline text-2xl text-primary mb-2">Patil Table</p>
+            <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Patil Table Fine Dining. All rights reserved.</p>
           </div>
         </footer>
         <Toaster />

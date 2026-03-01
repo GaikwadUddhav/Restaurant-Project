@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +33,7 @@ export default function LoginPage() {
     <div className="container mx-auto px-4 py-20 flex justify-center items-center">
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-primary">
         <CardHeader className="text-center">
-          <CardTitle className="font-headline text-3xl text-primary">TableTap</CardTitle>
+          <CardTitle className="font-headline text-3xl text-primary">Patil Table</CardTitle>
           <CardDescription>
             {isLogin ? "Sign in to manage your bookings and orders." : "Join us for an exquisite dining experience."}
           </CardDescription>

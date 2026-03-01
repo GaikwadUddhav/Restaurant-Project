@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -55,7 +56,7 @@ export default function ReservationPage() {
           </div>
           <h1 className="font-headline text-4xl mb-4">Reservation Confirmed!</h1>
           <p className="text-muted-foreground mb-8 text-lg">
-            Thank you for choosing TableTap. We've sent a confirmation email to your account.
+            Thank you for choosing Patil Table. We've sent a confirmation email to your account.
           </p>
           <div className="bg-background rounded-2xl p-6 text-left border mb-8">
             <div className="grid grid-cols-2 gap-4">
