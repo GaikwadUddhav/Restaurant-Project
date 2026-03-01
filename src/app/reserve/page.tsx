@@ -31,7 +31,7 @@ export default function ReservationPage() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'done'>('idle');
 
   const UPI_ID = "8010341919@ybl";
-  const BOOKING_FEE = 500; // INR
+  const BOOKING_FEE = 50; // INR
 
   useEffect(() => {
     setDate(new Date());

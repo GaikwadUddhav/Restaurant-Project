@@ -92,7 +92,7 @@ export default function Home() {
             <div className="max-w-2xl">
               <h2 className="font-headline text-4xl mb-6">Traditional Hospitality</h2>
               <p className="text-xl opacity-90 mb-8">
-                At Patil Table, we believe in 'Atithi Devo Bhava'. Reserve your table for ₹500 and enjoy a guaranteed spot and a complimentary welcome drink.
+                At Patil Table, we believe in 'Atithi Devo Bhava'. Reserve your table for ₹50 and enjoy a guaranteed spot and a complimentary welcome drink.
               </p>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center gap-3"><Star className="h-5 w-5 text-secondary" /> Priority Seating for Large Families</li>
