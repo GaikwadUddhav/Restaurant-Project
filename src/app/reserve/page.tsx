@@ -9,12 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle, Loader2, Smartphone, ShieldCheck, QrCode } from "lucide-react";
+import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, setDocumentNonBlocking } from "@/firebase";
 import { collection, collectionGroup, doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export default function ReservationPage() {
   const { user, isUserLoading } = useUser();
@@ -27,10 +26,7 @@ export default function ReservationPage() {
   const [selectedTableId, setSelectedTableId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'done'>('idle');
 
-  const UPI_ID = "8010341919@ybl";
   const BOOKING_FEE = 50; // INR
 
   useEffect(() => {
@@ -96,15 +92,7 @@ export default function ReservationPage() {
       return;
     }
 
-    setShowPayment(true);
-  };
-
-  const handlePaymentComplete = () => {
-    setPaymentStatus('processing');
-    
-    setTimeout(() => {
-      completeReservation();
-    }, 2000);
+    completeReservation();
   };
 
   const completeReservation = () => {
@@ -145,15 +133,15 @@ export default function ReservationPage() {
     setDocumentNonBlocking(reservationRef, reservationData, { merge: true });
     setDocumentNonBlocking(paymentRef, paymentData, { merge: true });
     
-    setIsSubmitting(false);
-    setPaymentStatus('done');
-    setShowPayment(false);
-    setIsSuccess(true);
-    
-    toast({
-      title: "Reservation & Payment Successful",
-      description: "Your table at Patil Table is secured.",
-    });
+    // Simulate processing time
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      toast({
+        title: "Reservation Successful",
+        description: "Your table at Patil Table has been secured.",
+      });
+    }, 1500);
   };
 
   if (isSuccess) {
@@ -166,7 +154,7 @@ export default function ReservationPage() {
           </div>
           <h1 className="font-headline text-4xl mb-4 text-green-700">Confirmed!</h1>
           <p className="text-muted-foreground mb-8 text-lg">
-            Payment verified. We've reserved <strong>{selectedTable?.tableNumber}</strong> for your Indian feast.
+            We've reserved <strong>{selectedTable?.tableNumber}</strong> for your Indian feast.
           </p>
           <div className="bg-background rounded-2xl p-6 text-left border mb-8">
             <div className="grid grid-cols-2 gap-4">
@@ -200,7 +188,7 @@ export default function ReservationPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="font-headline text-5xl mb-2 text-primary">Reserve Your Table</h1>
-        <p className="text-muted-foreground text-lg">Choose from 15 preferred table options for your Patil Table experience.</p>
+        <p className="text-muted-foreground text-lg">Choose your preferred seating for the ultimate Patil Table experience.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
@@ -356,9 +344,15 @@ export default function ReservationPage() {
                   disabled={isSubmitting || !selectedTableId || isUserLoading}
                   onClick={handleBookingStart}
                 >
-                  <span className="flex items-center gap-3">
-                    <CreditCard className="h-6 w-6" /> Proceed to Pay
-                  </span>
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-3">
+                      <Loader2 className="animate-spin h-6 w-6" /> Processing...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6" /> Confirm & Book (₹{BOOKING_FEE})
+                    </span>
+                  )}
                 </Button>
                 <p className="text-[10px] text-center text-green-700 uppercase tracking-[0.2em] font-black mt-6">
                   Secure Patil Table Reservation
@@ -368,66 +362,7 @@ export default function ReservationPage() {
           </Card>
         </div>
       </div>
-
-      <Dialog open={showPayment} onOpenChange={setShowPayment}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-headline text-2xl text-center">UPI Payment Gateway</DialogTitle>
-            <DialogDescription className="text-center">
-              Scan the QR or use the UPI ID below to pay the booking fee.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-6 py-6">
-            <div className="bg-muted p-6 rounded-2xl border-2 border-primary/10">
-              <QrCode className="h-40 w-40 text-primary opacity-80" />
-              <p className="text-[10px] text-center mt-2 font-bold text-muted-foreground uppercase tracking-widest">Patil Table Secure QR</p>
-            </div>
-            
-            <div className="w-full space-y-4">
-              <div className="flex items-center justify-between p-4 bg-background border rounded-xl">
-                <div className="flex items-center gap-3">
-                  <Smartphone className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase">UPI ID</p>
-                    <p className="font-mono font-bold text-sm">{UPI_ID}</p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => {
-                  navigator.clipboard.writeText(UPI_ID);
-                  toast({ title: "Copied!", description: "UPI ID copied to clipboard." });
-                }}>Copy</Button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl">
-                <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase">Amount to Pay</p>
-                  <p className="font-headline text-2xl text-primary">₹{BOOKING_FEE.toFixed(2)}</p>
-                </div>
-                <div className="flex items-center gap-1 text-green-600">
-                  <ShieldCheck className="h-4 w-4" />
-                  <span className="text-[10px] font-bold uppercase">Verified</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="flex-col gap-2">
-            <Button 
-              className="w-full font-headline py-6 text-lg" 
-              onClick={handlePaymentComplete}
-              disabled={paymentStatus === 'processing'}
-            >
-              {paymentStatus === 'processing' ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin h-5 w-5" /> Verifying...
-                </span>
-              ) : "I've Completed the Payment"}
-            </Button>
-            <p className="text-[10px] text-center text-muted-foreground italic">
-              Once paid, your reservation will be confirmed instantly.
-            </p>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
+
