@@ -53,6 +53,10 @@ export default function CartPage() {
     }, 2000);
   };
 
+  const getImageUrl = (imageId: string) => {
+    return PlaceHolderImages.find(img => img.id === imageId)?.imageUrl || "https://picsum.photos/seed/placeholder/600/400";
+  };
+
   if (isOrdered) {
     return (
       <div className="container mx-auto px-4 py-20 text-center max-w-xl">
@@ -92,7 +96,7 @@ export default function CartPage() {
                 <div className="flex flex-col sm:flex-row">
                   <div className="relative w-full sm:w-48 h-48 sm:h-auto">
                     <Image 
-                      src={PlaceHolderImages.find(img => img.id === item.image)?.imageUrl || ""} 
+                      src={getImageUrl(item.image)} 
                       alt={item.name}
                       fill
                       className="object-cover"

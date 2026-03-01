@@ -11,13 +11,15 @@ export default function Home() {
   const biryaniImg = PlaceHolderImages.find(img => img.id === "food-biryani");
   const paneerTikkaImg = PlaceHolderImages.find(img => img.id === "food-paneer-tikka");
 
+  const fallbackImg = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200";
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <Image
-          src={heroImg?.imageUrl || ""}
-          alt={heroImg?.description || ""}
+          src={heroImg?.imageUrl || fallbackImg}
+          alt={heroImg?.description || "Patil Table Interior"}
           fill
           className="object-cover opacity-80"
           priority
@@ -55,19 +57,19 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeaturedCard 
-              image={butterChickenImg?.imageUrl || ""} 
+              image={butterChickenImg?.imageUrl || fallbackImg} 
               title="Classic Butter Chicken" 
               price="$22" 
               description="Our signature creamy tomato gravy with tender clay-oven roasted chicken."
             />
             <FeaturedCard 
-              image={biryaniImg?.imageUrl || ""} 
+              image={biryaniImg?.imageUrl || fallbackImg} 
               title="Hyderabadi Biryani" 
               price="$20" 
               description="Fragrant basmati rice layered with saffron, mint, and marinated chicken."
             />
              <FeaturedCard 
-              image={paneerTikkaImg?.imageUrl || ""} 
+              image={paneerTikkaImg?.imageUrl || fallbackImg} 
               title="Smoky Paneer Tikka" 
               price="$16" 
               description="Fresh cottage cheese marinated in hung curd and spices, grilled in a charcoal tandoor."
@@ -103,7 +105,7 @@ export default function Home() {
             </div>
             <div className="w-full md:w-1/3 aspect-square relative rounded-full overflow-hidden border-4 border-secondary/30">
               <Image 
-                src={PlaceHolderImages.find(img => img.id === "table-setting")?.imageUrl || ""}
+                src={PlaceHolderImages.find(img => img.id === "table-setting")?.imageUrl || fallbackImg}
                 alt="Patil Table Indian Setting"
                 fill
                 className="object-cover"

@@ -63,6 +63,10 @@ export default function MenuPage() {
     });
   };
 
+  const getImageUrl = (imageId: string) => {
+    return PlaceHolderImages.find(img => img.id === imageId)?.imageUrl || "https://picsum.photos/seed/placeholder/600/400";
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
@@ -99,7 +103,7 @@ export default function MenuPage() {
           <div key={item.id} className="group flex flex-col bg-card border rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
             <div className="relative h-56">
               <Image 
-                src={PlaceHolderImages.find(img => img.id === item.image)?.imageUrl || ""} 
+                src={getImageUrl(item.image)} 
                 alt={item.name}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
