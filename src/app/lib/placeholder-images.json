@@ -3,45 +3,45 @@
   "placeholderImages": [
     {
       "id": "hero-restaurant",
-      "description": "Elegant restaurant interior with warm lighting",
-      "imageUrl": "https://picsum.photos/seed/restaurant-hero/1200/600",
-      "imageHint": "restaurant interior"
+      "description": "Elegant Indian restaurant interior with warm lighting and ethnic decor",
+      "imageUrl": "https://picsum.photos/seed/indian-restaurant/1200/600",
+      "imageHint": "indian restaurant"
     },
     {
-      "id": "food-pasta",
-      "description": "Gourmet truffle pasta with parmesan",
-      "imageUrl": "https://picsum.photos/seed/pasta/600/400",
-      "imageHint": "truffle pasta"
+      "id": "food-butter-chicken",
+      "description": "Creamy Butter Chicken with fresh cilantro",
+      "imageUrl": "https://picsum.photos/seed/butter-chicken/600/400",
+      "imageHint": "butter chicken"
     },
     {
-      "id": "food-steak",
-      "description": "Seared ribeye steak with rosemary",
-      "imageUrl": "https://picsum.photos/seed/steak/600/400",
-      "imageHint": "ribeye steak"
+      "id": "food-paneer-tikka",
+      "description": "Grilled Paneer Tikka with bell peppers",
+      "imageUrl": "https://picsum.photos/seed/paneer-tikka/600/400",
+      "imageHint": "paneer tikka"
     },
     {
-      "id": "food-salad",
-      "description": "Fresh mediterranean salad with feta",
-      "imageUrl": "https://picsum.photos/seed/salad/600/400",
-      "imageHint": "greek salad"
+      "id": "food-biryani",
+      "description": "Fragrant Hyderabadi Chicken Biryani",
+      "imageUrl": "https://picsum.photos/seed/biryani/600/400",
+      "imageHint": "chicken biryani"
     },
     {
       "id": "food-dessert",
-      "description": "Chocolate lava cake with berries",
-      "imageUrl": "https://picsum.photos/seed/dessert/600/400",
-      "imageHint": "chocolate cake"
+      "description": "Sweet Gulab Jamun in syrup",
+      "imageUrl": "https://picsum.photos/seed/gulab-jamun/600/400",
+      "imageHint": "gulab jamun"
     },
     {
-      "id": "food-cocktail",
-      "description": "Signature hibiscus cocktail",
-      "imageUrl": "https://picsum.photos/seed/cocktail/600/400",
-      "imageHint": "craft cocktail"
+      "id": "food-lassi",
+      "description": "Refreshing Mango Lassi with saffron",
+      "imageUrl": "https://picsum.photos/seed/mango-lassi/600/400",
+      "imageHint": "mango lassi"
     },
     {
       "id": "table-setting",
-      "description": "Elegant table setting with linen",
-      "imageUrl": "https://picsum.photos/seed/table/600/400",
-      "imageHint": "dining table"
+      "description": "Traditional Indian brass thali setting",
+      "imageUrl": "https://picsum.photos/seed/indian-table/600/400",
+      "imageHint": "indian dining"
     }
   ]
 }

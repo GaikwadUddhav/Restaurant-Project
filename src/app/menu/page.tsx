@@ -1,24 +1,27 @@
+
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { ShoppingBag, Plus, Minus, Search } from "lucide-react";
+import { ShoppingBag, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
-  { id: 1, name: "Truffle Tagliatelle", price: 28, category: "Mains", image: "food-pasta", description: "Rich cream sauce with seasonal truffles." },
-  { id: 2, name: "Herb-Crusted Ribeye", price: 45, category: "Mains", image: "food-steak", description: "300g premium beef with roasted vegetables." },
-  { id: 3, name: "Burrata Salad", price: 18, category: "Starters", image: "food-salad", description: "Creamy burrata with heirloom tomatoes and pesto." },
-  { id: 4, name: "Lava Cake", price: 12, category: "Desserts", image: "food-dessert", description: "Warm chocolate core with raspberry coulis." },
-  { id: 5, name: "Hibiscus Gin", price: 16, category: "Drinks", image: "food-cocktail", description: "Floral and refreshing signature mix." },
-  { id: 6, name: "Wild Mushroom Risotto", price: 26, category: "Mains", image: "food-pasta", description: "Arborio rice with porcini and truffle oil." },
+  { id: 1, name: "Butter Chicken", price: 22, category: "Main Course", image: "food-butter-chicken", description: "Tender chicken simmered in a rich, creamy tomato and butter sauce." },
+  { id: 2, name: "Paneer Tikka", price: 16, category: "Starters", image: "food-paneer-tikka", description: "Marinated cottage cheese cubes grilled to perfection with spices." },
+  { id: 3, name: "Hyderabadi Biryani", price: 20, category: "Main Course", image: "food-biryani", description: "Long-grain basmati rice cooked with aromatic spices and tender chicken." },
+  { id: 4, name: "Gulab Jamun", price: 8, category: "Desserts", image: "food-dessert", description: "Soft, deep-fried milk solids soaked in cardamom-flavored sugar syrup." },
+  { id: 5, name: "Mango Lassi", price: 6, category: "Drinks", image: "food-lassi", description: "A creamy and refreshing yogurt-based drink with sweet mango pulp." },
+  { id: 6, name: "Dal Makhani", price: 14, category: "Main Course", image: "food-paneer-tikka", description: "Slow-cooked black lentils with cream and spices for a buttery finish." },
+  { id: 7, name: "Garlic Naan", price: 4, category: "Sides", image: "table-setting", description: "Soft, leavened flatbread brushed with fresh garlic and butter." },
+  { id: 8, name: "Vegetable Samosa", price: 7, category: "Starters", image: "table-setting", description: "Crispy pastry filled with spiced potatoes and green peas." },
 ];
 
-const categories = ["All", "Starters", "Mains", "Desserts", "Drinks"];
+const categories = ["All", "Starters", "Main Course", "Desserts", "Drinks", "Sides"];
 
 export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -33,8 +36,8 @@ export default function MenuPage() {
 
   const addToCart = (itemName: string) => {
     toast({
-      title: "Added to Cart",
-      description: `${itemName} has been added to your shopping bag.`,
+      title: "Added to Order",
+      description: `${itemName} has been added to your Patil Table order.`,
     });
   };
 
@@ -42,8 +45,8 @@ export default function MenuPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         <div>
-          <h1 className="font-headline text-5xl mb-2 text-primary">Our Menu</h1>
-          <p className="text-muted-foreground text-lg">Hand-picked ingredients for an unforgettable experience.</p>
+          <h1 className="font-headline text-5xl mb-2 text-primary">Authentic Indian Menu</h1>
+          <p className="text-muted-foreground text-lg">Experience the rich heritage of Indian flavors at Patil Table.</p>
         </div>
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -78,7 +81,7 @@ export default function MenuPage() {
                 alt={item.name}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
-                data-ai-hint="menu item"
+                data-ai-hint="indian food"
               />
               <Badge className="absolute top-4 left-4 font-headline bg-background/90 text-foreground border-none">
                 {item.category}
@@ -100,7 +103,7 @@ export default function MenuPage() {
 
       {filteredItems.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-xl text-muted-foreground">No dishes found matching your criteria.</p>
+          <p className="text-xl text-muted-foreground">No Indian dishes found matching your criteria.</p>
         </div>
       )}
     </div>

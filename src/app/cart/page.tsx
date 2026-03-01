@@ -12,8 +12,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useToast } from "@/hooks/use-toast";
 
 const initialCart = [
-  { id: 1, name: "Truffle Tagliatelle", price: 28, quantity: 2, image: "food-pasta" },
-  { id: 5, name: "Hibiscus Gin", price: 16, quantity: 1, image: "food-cocktail" },
+  { id: 1, name: "Butter Chicken", price: 22, quantity: 2, image: "food-butter-chicken" },
+  { id: 5, name: "Mango Lassi", price: 6, quantity: 1, image: "food-lassi" },
+  { id: 7, name: "Garlic Naan", price: 4, quantity: 4, image: "table-setting" },
 ];
 
 export default function CartPage() {
@@ -46,8 +47,8 @@ export default function CartPage() {
       setIsProcessing(false);
       setIsOrdered(true);
       toast({
-        title: "Order Placed!",
-        description: "Your food is being prepared. Follow steps in the profile.",
+        title: "Order Received!",
+        description: "Our chefs at Patil Table are preparing your Indian feast.",
       });
     }, 2000);
   };
@@ -59,12 +60,12 @@ export default function CartPage() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="h-10 w-10 text-green-600" />
           </div>
-          <h1 className="font-headline text-4xl mb-4 text-primary">Bon Appétit!</h1>
+          <h1 className="font-headline text-4xl mb-4 text-primary">Dhanyavaad!</h1>
           <p className="text-muted-foreground mb-8 text-lg">
-            Your order has been placed and is currently being prepared by our chefs.
+            Your Indian order has been placed and is currently being prepared with care by our kitchen team.
           </p>
           <Button asChild className="w-full font-headline py-6">
-            <Link href="/menu">Browse More</Link>
+            <Link href="/menu">Browse More Dishes</Link>
           </Button>
         </div>
       </div>
@@ -73,14 +74,14 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="font-headline text-5xl mb-12 text-primary">Your Order</h1>
+      <h1 className="font-headline text-5xl mb-12 text-primary">Your Patil Table Order</h1>
 
       {cart.length === 0 ? (
         <div className="text-center py-20">
           <ShoppingBag className="h-20 w-20 mx-auto text-muted mb-6" />
-          <h2 className="text-2xl font-headline mb-4">Your bag is empty</h2>
+          <h2 className="text-2xl font-headline mb-4">Your basket is empty</h2>
           <Button asChild className="font-headline">
-            <Link href="/menu">Go to Menu</Link>
+            <Link href="/menu">Browse Menu</Link>
           </Button>
         </div>
       ) : (
@@ -125,7 +126,7 @@ export default function CartPage() {
           <div className="space-y-6">
             <Card className="sticky top-24">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl">Summary</CardTitle>
+                <CardTitle className="font-headline text-2xl">Bill Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between text-sm">
@@ -133,12 +134,12 @@ export default function CartPage() {
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Tax (10%)</span>
+                  <span className="text-muted-foreground">GST (10%)</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-xl pt-2">
-                  <span>Total</span>
+                  <span>Total Payable</span>
                   <span className="text-primary">${total.toFixed(2)}</span>
                 </div>
               </CardContent>
@@ -146,12 +147,12 @@ export default function CartPage() {
                 <Button className="w-full font-headline py-6 text-lg" size="lg" onClick={handleCheckout} disabled={isProcessing}>
                   {isProcessing ? "Processing..." : (
                     <span className="flex items-center gap-2">
-                      Checkout <ArrowRight className="h-5 w-5" />
+                      Place Order <ArrowRight className="h-5 w-5" />
                     </span>
                   )}
                 </Button>
                 <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <CreditCard className="h-3 w-3" /> Secure Payment Powered by Stripe
+                  <CreditCard className="h-3 w-3" /> Secure Payment
                 </div>
               </CardFooter>
             </Card>
