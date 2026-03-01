@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle, Loader2, Smartphone, ShieldCheck, QrCode } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, setDocumentNonBlocking } from "@/firebase";
 import { collection, collectionGroup, doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ export default function ReservationPage() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'done'>('idle');
 
   const UPI_ID = "8010341919@ybl";
-  const BOOKING_FEE = 50;
+  const BOOKING_FEE = 500; // Updated to INR
 
   // Initialize date on client to avoid hydration mismatch
   useEffect(() => {
@@ -142,7 +142,7 @@ export default function ReservationPage() {
       id: paymentId,
       transactionId: transactionId,
       amount: BOOKING_FEE,
-      currency: "USD",
+      currency: "INR",
       paymentDateTime: new Date().toISOString(),
       status: "Successful",
       paymentPurpose: "ReservationFee",
@@ -354,7 +354,7 @@ export default function ReservationPage() {
               
               <div className="flex justify-between items-center pt-2">
                 <span className="font-bold text-green-800">Booking Fee</span>
-                <span className="font-headline text-2xl text-green-900">${BOOKING_FEE.toFixed(2)}</span>
+                <span className="font-headline text-2xl text-green-900">₹{BOOKING_FEE.toFixed(2)}</span>
               </div>
               
               <div className="pt-4">
@@ -410,7 +410,7 @@ export default function ReservationPage() {
               <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl">
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase">Amount to Pay</p>
-                  <p className="font-headline text-2xl text-primary">${BOOKING_FEE.toFixed(2)}</p>
+                  <p className="font-headline text-2xl text-primary">₹{BOOKING_FEE.toFixed(2)}</p>
                 </div>
                 <div className="flex items-center gap-1 text-green-600">
                   <ShieldCheck className="h-4 w-4" />
@@ -440,4 +440,3 @@ export default function ReservationPage() {
     </div>
   );
 }
-

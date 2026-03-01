@@ -160,7 +160,7 @@ export default function DashboardPage() {
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">{order.id}</TableCell>
                         <TableCell>{new Date(order.orderDateTime).toLocaleDateString()}</TableCell>
-                        <TableCell className="font-bold text-primary">${order.totalAmount}</TableCell>
+                        <TableCell className="font-bold text-primary">₹{order.totalAmount}</TableCell>
                         <TableCell>
                           <Badge className={cn(
                             "font-bold uppercase tracking-tighter text-[10px]",

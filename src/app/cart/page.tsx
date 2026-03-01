@@ -12,9 +12,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { useToast } from "@/hooks/use-toast";
 
 const initialCart = [
-  { id: 1, name: "Butter Chicken", price: 22, quantity: 2, image: "food-butter-chicken" },
-  { id: 2, name: "Paneer Tikka", price: 16, quantity: 1, image: "food-paneer-tikka" },
-  { id: 5, name: "Mango Lassi", price: 6, quantity: 2, image: "food-lassi" },
+  { id: 1, name: "Butter Chicken", price: 450, quantity: 2, image: "food-butter-chicken" },
+  { id: 2, name: "Paneer Tikka", price: 320, quantity: 1, image: "food-paneer-tikka" },
+  { id: 5, name: "Mango Lassi", price: 120, quantity: 2, image: "food-lassi" },
 ];
 
 export default function CartPage() {
@@ -24,7 +24,7 @@ export default function CartPage() {
   const { toast } = useToast();
 
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const tax = subtotal * 0.1;
+  const tax = subtotal * 0.05; // 5% GST for food
   const total = subtotal + tax;
 
   const updateQuantity = (id: number, delta: number) => {
@@ -105,7 +105,7 @@ export default function CartPage() {
                   <CardContent className="flex-1 p-6">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="font-headline text-2xl">{item.name}</h3>
-                      <p className="font-headline text-xl text-primary">${item.price}</p>
+                      <p className="font-headline text-xl text-primary">₹{item.price}</p>
                     </div>
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-3 border rounded-full px-2 py-1">
@@ -135,16 +135,16 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">GST (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span className="text-muted-foreground">GST (5%)</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-xl pt-2">
                   <span>Total Payable</span>
-                  <span className="text-primary">${total.toFixed(2)}</span>
+                  <span className="text-primary">₹{total.toFixed(2)}</span>
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-4">

@@ -12,35 +12,35 @@ import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
   // STARTERS
-  { id: 1, name: "Vegetable Samosa", price: 7, category: "Starters", image: "food-samosa", description: "Crispy pastry filled with spiced potatoes and green peas, served with mint chutney." },
-  { id: 2, name: "Paneer Tikka", price: 16, category: "Starters", image: "food-paneer-tikka", description: "Marinated cottage cheese cubes grilled to perfection with spices in a clay oven." },
-  { id: 3, name: "Chicken Tikka", price: 18, category: "Starters", image: "food-tikka", description: "Boneless chicken marinated in yogurt and spices, grilled in a charcoal tandoor." },
-  { id: 4, name: "Hara Bhara Kabab", price: 14, category: "Starters", image: "food-kabab", description: "Nutritious green patties made with spinach, green peas, and fresh spices." },
-  { id: 5, name: "Fish Amritsari", price: 19, category: "Starters", image: "food-tikka", description: "Crispy batter-fried fish pieces seasoned with carom seeds and Indian spices." },
+  { id: 1, name: "Vegetable Samosa", price: 120, category: "Starters", image: "food-samosa", description: "Crispy pastry filled with spiced potatoes and green peas, served with mint chutney." },
+  { id: 2, name: "Paneer Tikka", price: 320, category: "Starters", image: "food-paneer-tikka", description: "Marinated cottage cheese cubes grilled to perfection with spices in a clay oven." },
+  { id: 3, name: "Chicken Tikka", price: 380, category: "Starters", image: "food-tikka", description: "Boneless chicken marinated in yogurt and spices, grilled in a charcoal tandoor." },
+  { id: 4, name: "Hara Bhara Kabab", price: 280, category: "Starters", image: "food-kabab", description: "Nutritious green patties made with spinach, green peas, and fresh spices." },
+  { id: 5, name: "Fish Amritsari", price: 420, category: "Starters", image: "food-tikka", description: "Crispy batter-fried fish pieces seasoned with carom seeds and Indian spices." },
 
   // MAIN COURSE
-  { id: 6, name: "Butter Chicken", price: 22, category: "Main Course", image: "food-butter-chicken", description: "Tender chicken simmered in a rich, creamy tomato and butter sauce." },
-  { id: 7, name: "Hyderabadi Biryani", price: 20, category: "Main Course", image: "food-biryani", description: "Long-grain basmati rice cooked with aromatic spices and tender chicken." },
-  { id: 8, name: "Dal Makhani", price: 14, category: "Main Course", image: "food-dal-makhani", description: "Slow-cooked black lentils with cream and spices for a buttery finish." },
-  { id: 9, name: "Lamb Rogan Josh", price: 24, category: "Main Course", image: "food-rogan-josh", description: "Slow-cooked lamb in a traditional Kashmiri style with aromatic spices." },
-  { id: 10, name: "Malai Kofta", price: 18, category: "Main Course", image: "food-kofta", description: "Deep-fried vegetable and cheese balls served in a rich and creamy tomato gravy." },
-  { id: 11, name: "Palak Paneer", price: 17, category: "Main Course", image: "food-paneer-tikka", description: "Fresh spinach puree cooked with cubes of cottage cheese and mild spices." },
+  { id: 6, name: "Butter Chicken", price: 450, category: "Main Course", image: "food-butter-chicken", description: "Tender chicken simmered in a rich, creamy tomato and butter sauce." },
+  { id: 7, name: "Hyderabadi Biryani", price: 350, category: "Main Course", image: "food-biryani", description: "Long-grain basmati rice cooked with aromatic spices and tender chicken." },
+  { id: 8, name: "Dal Makhani", price: 290, category: "Main Course", image: "food-dal-makhani", description: "Slow-cooked black lentils with cream and spices for a buttery finish." },
+  { id: 9, name: "Lamb Rogan Josh", price: 550, category: "Main Course", image: "food-rogan-josh", description: "Slow-cooked lamb in a traditional Kashmiri style with aromatic spices." },
+  { id: 10, name: "Malai Kofta", price: 340, category: "Main Course", image: "food-kofta", description: "Deep-fried vegetable and cheese balls served in a rich and creamy tomato gravy." },
+  { id: 11, name: "Palak Paneer", price: 310, category: "Main Course", image: "food-paneer-tikka", description: "Fresh spinach puree cooked with cubes of cottage cheese and mild spices." },
 
   // SIDES
-  { id: 12, name: "Garlic Naan", price: 4, category: "Sides", image: "food-naan", description: "Soft, leavened flatbread brushed with fresh garlic and butter." },
-  { id: 13, name: "Butter Naan", price: 3.5, category: "Sides", image: "food-naan", description: "Freshly baked leavened bread generously brushed with butter." },
-  { id: 14, name: "Jeera Rice", price: 6, category: "Sides", image: "food-rice", description: "Fragrant basmati rice tempered with roasted cumin seeds." },
-  { id: 15, name: "Tandoori Roti", price: 3, category: "Sides", image: "food-naan", description: "Whole wheat unleavened bread cooked in a traditional clay oven." },
+  { id: 12, name: "Garlic Naan", price: 80, category: "Sides", image: "food-naan", description: "Soft, leavened flatbread brushed with fresh garlic and butter." },
+  { id: 13, name: "Butter Naan", price: 60, category: "Sides", image: "food-naan", description: "Freshly baked leavened bread generously brushed with butter." },
+  { id: 14, name: "Jeera Rice", price: 150, category: "Sides", image: "food-rice", description: "Fragrant basmati rice tempered with roasted cumin seeds." },
+  { id: 15, name: "Tandoori Roti", price: 40, category: "Sides", image: "food-naan", description: "Whole wheat unleavened bread cooked in a traditional clay oven." },
 
   // DESSERTS
-  { id: 16, name: "Gulab Jamun", price: 8, category: "Desserts", image: "food-dessert", description: "Soft, deep-fried milk solids soaked in cardamom-flavored sugar syrup." },
-  { id: 17, name: "Rasmalai", price: 10, category: "Desserts", image: "food-rasmalai", description: "Flattened balls of chana soaked in malai (clotted cream) flavored with cardamom." },
-  { id: 18, name: "Kheer", price: 8, category: "Desserts", image: "food-rasmalai", description: "Traditional Indian rice pudding enriched with nuts and saffron." },
+  { id: 16, name: "Gulab Jamun", price: 150, category: "Desserts", image: "food-dessert", description: "Soft, deep-fried milk solids soaked in cardamom-flavored sugar syrup." },
+  { id: 17, name: "Rasmalai", price: 180, category: "Desserts", image: "food-rasmalai", description: "Flattened balls of chana soaked in malai (clotted cream) flavored with cardamom." },
+  { id: 18, name: "Kheer", price: 140, category: "Desserts", image: "food-rasmalai", description: "Traditional Indian rice pudding enriched with nuts and saffron." },
 
   // DRINKS
-  { id: 19, name: "Mango Lassi", price: 6, category: "Drinks", image: "food-lassi", description: "A creamy and refreshing yogurt-based drink with sweet mango pulp." },
-  { id: 20, name: "Masala Chai", price: 4, category: "Drinks", image: "food-chai", description: "A classic Indian spiced tea brewed with ginger and cardamom." },
-  { id: 21, name: "Sweet Lassi", price: 5, category: "Drinks", image: "food-lassi", description: "Traditional sweet yogurt drink served chilled with a hint of rose water." },
+  { id: 19, name: "Mango Lassi", price: 120, category: "Drinks", image: "food-lassi", description: "A creamy and refreshing yogurt-based drink with sweet mango pulp." },
+  { id: 20, name: "Masala Chai", price: 60, category: "Drinks", image: "food-chai", description: "A classic Indian spiced tea brewed with ginger and cardamom." },
+  { id: 21, name: "Sweet Lassi", price: 100, category: "Drinks", image: "food-lassi", description: "Traditional sweet yogurt drink served chilled with a hint of rose water." },
 ];
 
 const categories = ["All", "Starters", "Main Course", "Desserts", "Drinks", "Sides"];
@@ -116,7 +116,7 @@ export default function MenuPage() {
             <div className="p-6 flex flex-col flex-1">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-headline text-2xl">{item.name}</h3>
-                <span className="font-headline text-primary text-xl">${item.price}</span>
+                <span className="font-headline text-primary text-xl">₹{item.price}</span>
               </div>
               <p className="text-muted-foreground text-sm mb-6 flex-1">{item.description}</p>
               <Button className="w-full font-headline" variant="outline" onClick={() => addToCart(item.name)}>
