@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+import { collection, collectionGroup } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 export default function ReservationPage() {
@@ -39,8 +39,39 @@ export default function ReservationPage() {
   }, [db]);
   const { data: allTables, isLoading: isLoadingTables } = useCollection(tablesQuery);
 
-  // Filter tables based on guest count
-  const suitableTables = allTables?.filter(table => table.capacity >= parseInt(guests)) || [];
+  // Fetch all reservations to check real-time availability
+  const reservationsQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return collectionGroup(db, "reservations");
+  }, [db]);
+  const { data: allReservations } = useCollection(reservationsQuery);
+
+  // Calculate selection ISO string for checking availability
+  const currentSelectionIso = useMemo(() => {
+    if (!date || !time) return null;
+    const selectedDateTime = new Date(date);
+    const [hours, minutes] = time.split(':');
+    selectedDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    return selectedDateTime.toISOString();
+  }, [date, time]);
+
+  // Filter tables based on guest count and availability
+  const displayTables = useMemo(() => {
+    if (!allTables) return [];
+    
+    // First, filter by capacity as a hard requirement
+    const byCapacity = allTables.filter(table => table.capacity >= parseInt(guests));
+    
+    // Map them with their availability status for the selected date/time
+    return byCapacity.map(table => {
+      const isBooked = allReservations?.some(res => 
+        res.tableId === table.id && 
+        res.reservationDateTime === currentSelectionIso && 
+        res.status !== "Cancelled"
+      );
+      return { ...table, isBooked };
+    });
+  }, [allTables, allReservations, guests, currentSelectionIso]);
 
   const handleBooking = () => {
     if (isUserLoading || !user) {
@@ -64,15 +95,12 @@ export default function ReservationPage() {
     setIsSubmitting(true);
 
     const reservationId = Math.random().toString(36).substr(2, 9);
-    const reservationDateTime = new Date(date);
-    const [hours, minutes] = time.split(':');
-    reservationDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
+    
     const reservationData = {
       id: reservationId,
       customerId: user.uid,
       tableId: selectedTableId,
-      reservationDateTime: reservationDateTime.toISOString(),
+      reservationDateTime: currentSelectionIso,
       numberOfGuests: parseInt(guests),
       status: "Confirmed",
       bookingFeeAmount: 50,
@@ -204,28 +232,31 @@ export default function ReservationPage() {
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <UtensilsCrossed className="h-5 w-5 text-primary" /> 2. Choose Your Table
               </CardTitle>
-              <CardDescription>Select a highlighted table to book it. White = Available, Green = Your Choice.</CardDescription>
+              <CardDescription>Select a table to book it. White = Available, Green = Your Choice, Gray = Already Booked.</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingTables ? (
                 <div className="text-center py-10">
                   <p className="animate-pulse italic text-primary">Scanning Patil Table floor plan...</p>
                 </div>
-              ) : suitableTables.length > 0 ? (
+              ) : displayTables.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {suitableTables.map(table => (
+                  {displayTables.map(table => (
                     <button
                       key={table.id}
+                      disabled={table.isBooked}
                       onClick={() => setSelectedTableId(table.id)}
                       className={cn(
                         "flex flex-col p-5 border-2 rounded-2xl text-left transition-all duration-300 group shadow-sm",
                         selectedTableId === table.id 
                           ? "bg-green-600 border-green-600 text-white transform scale-105" 
-                          : "bg-white border-border hover:border-green-300 hover:bg-green-50/30"
+                          : table.isBooked
+                            ? "bg-muted border-muted text-muted-foreground cursor-not-allowed opacity-60"
+                            : "bg-white border-border hover:border-green-300 hover:bg-green-50/30"
                       )}
                     >
                       <div className="flex justify-between items-start mb-3">
-                        <span className={cn("font-headline text-2xl font-bold", selectedTableId === table.id ? "text-white" : "text-primary")}>
+                        <span className={cn("font-headline text-2xl font-bold", selectedTableId === table.id ? "text-white" : table.isBooked ? "text-muted-foreground" : "text-primary")}>
                           {table.tableNumber}
                         </span>
                         <span className={cn("text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-wider", selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground")}>
@@ -233,10 +264,17 @@ export default function ReservationPage() {
                         </span>
                       </div>
                       <p className={cn("text-xs leading-relaxed", selectedTableId === table.id ? "text-white/90" : "text-muted-foreground")}>
-                        {table.description || "Perfect for authentic Indian dining."}
+                        {table.isBooked ? "This table is already reserved for this time." : (table.description || "Perfect for authentic Indian dining.")}
                       </p>
-                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase", selectedTableId === table.id ? "text-white" : "text-green-600 opacity-0 group-hover:opacity-100 transition-opacity")}>
-                        <CheckCircle2 className="h-3.5 w-3.5" /> {selectedTableId === table.id ? "Selected for Booking" : "Select to Book"}
+                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase", 
+                        selectedTableId === table.id 
+                          ? "text-white" 
+                          : table.isBooked 
+                            ? "text-muted-foreground" 
+                            : "text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      )}>
+                        {table.isBooked ? <AlertCircle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                        {table.isBooked ? "Unavailable" : selectedTableId === table.id ? "Selected for Booking" : "Select to Book"}
                       </div>
                     </button>
                   ))}

@@ -43,7 +43,9 @@ service cloud.firestore {
       allow delete: if isExistingOwner(customerId) || isExistingRestaurantOwner();
 
       match /reservations/{reservationId} {
-        allow get, list: if isOwner(customerId) || isRestaurantOwner();
+        // Updated: Allow any signed-in user (including anonymous) to list reservations 
+        // to support the real-time availability check on the booking page.
+        allow get, list: if isSignedIn() || isRestaurantOwner();
         allow create: if isOwner(customerId) && request.resource.data.customerId == customerId;
         allow update, delete: if (isExistingOwner(customerId) || isExistingRestaurantOwner());
       }
@@ -90,6 +92,11 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if isRestaurantOwner();
       allow create, update, delete: if false; 
+    }
+
+    // Recursive match for collection group queries on reservations
+    match /{path=**}/reservations/{reservationId} {
+      allow get, list: if isSignedIn() || isRestaurantOwner();
     }
   }
 }
