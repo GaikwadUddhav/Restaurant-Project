@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 
 const menuItems = [
   { id: 1, name: "Butter Chicken", price: 22, category: "Main Course", image: "food-butter-chicken", description: "Tender chicken simmered in a rich, creamy tomato and butter sauce." },
-  { id: 2, name: "Paneer Tikka", price: 16, category: "Starters", image: "food-paneer-tikka", description: "Marinated cottage cheese cubes grilled to perfection with spices." },
+  { id: 2, name: "Paneer Tikka", price: 16, category: "Starters", image: "food-paneer-tikka", description: "Marinated cottage cheese cubes grilled to perfection with spices in a clay oven." },
   { id: 3, name: "Hyderabadi Biryani", price: 20, category: "Main Course", image: "food-biryani", description: "Long-grain basmati rice cooked with aromatic spices and tender chicken." },
   { id: 4, name: "Gulab Jamun", price: 8, category: "Desserts", image: "food-dessert", description: "Soft, deep-fried milk solids soaked in cardamom-flavored sugar syrup." },
   { id: 5, name: "Mango Lassi", price: 6, category: "Drinks", image: "food-lassi", description: "A creamy and refreshing yogurt-based drink with sweet mango pulp." },

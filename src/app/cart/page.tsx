@@ -13,8 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const initialCart = [
   { id: 1, name: "Butter Chicken", price: 22, quantity: 2, image: "food-butter-chicken" },
-  { id: 5, name: "Mango Lassi", price: 6, quantity: 1, image: "food-lassi" },
-  { id: 7, name: "Garlic Naan", price: 4, quantity: 4, image: "table-setting" },
+  { id: 2, name: "Paneer Tikka", price: 16, quantity: 1, image: "food-paneer-tikka" },
+  { id: 5, name: "Mango Lassi", price: 6, quantity: 2, image: "food-lassi" },
 ];
 
 export default function CartPage() {
