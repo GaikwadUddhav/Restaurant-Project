@@ -2,6 +2,9 @@
 
 This is a Next.js 15 application built in Firebase Studio, featuring a real-time table reservation system and an owner dashboard.
 
+## Developer Contact
+**Email:** solankeabhishek021@gmail.com
+
 ## How to push to your GitHub Repository
 
 To push this code to `git@github.com:Abhi71-star/workp1.git`, follow these steps on your local machine:
