@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { collection, query, where } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 export default function ReservationPage() {
@@ -27,20 +27,20 @@ export default function ReservationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Fetch tables to check availability
+  // Initialize date on client to avoid hydration mismatch
+  useEffect(() => {
+    setDate(new Date());
+  }, []);
+
+  // Fetch all tables
   const tablesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, "restaurantTables");
   }, [db]);
-
   const { data: allTables, isLoading: isLoadingTables } = useCollection(tablesQuery);
 
   // Filter tables based on guest count
-  const availableTables = allTables?.filter(table => table.capacity >= parseInt(guests)) || [];
-
-  useEffect(() => {
-    setDate(new Date());
-  }, []);
+  const suitableTables = allTables?.filter(table => table.capacity >= parseInt(guests)) || [];
 
   const handleBooking = () => {
     if (isUserLoading || !user) {
@@ -63,16 +63,22 @@ export default function ReservationPage() {
 
     setIsSubmitting(true);
 
+    const reservationId = Math.random().toString(36).substr(2, 9);
+    const reservationDateTime = new Date(date);
+    const [hours, minutes] = time.split(':');
+    reservationDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
     const reservationData = {
+      id: reservationId,
       customerId: user.uid,
       tableId: selectedTableId,
-      reservationDateTime: new Date(date.setHours(parseInt(time.split(':')[0]), parseInt(time.split(':')[1]))).toISOString(),
+      reservationDateTime: reservationDateTime.toISOString(),
       numberOfGuests: parseInt(guests),
       status: "Confirmed",
       bookingFeeAmount: 50,
       paymentId: `PAY-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       specialRequests: "",
-      id: Math.random().toString(36).substr(2, 9)
+      createdAt: new Date().toISOString()
     };
 
     const reservationsRef = collection(db, "customerProfiles", user.uid, "reservations");
@@ -88,6 +94,11 @@ export default function ReservationPage() {
       })
       .catch(() => {
         setIsSubmitting(false);
+        toast({
+          variant: "destructive",
+          title: "Booking Failed",
+          description: "We couldn't process your reservation. Please try again.",
+        });
       });
   };
 
@@ -135,12 +146,11 @@ export default function ReservationPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="font-headline text-5xl mb-2 text-primary">Book a Table</h1>
-        <p className="text-muted-foreground text-lg">Real-time availability for an exquisite Indian dining experience.</p>
+        <p className="text-muted-foreground text-lg">Real-time availability for an exquisite Patil Table experience.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
         <div className="lg:col-span-2 space-y-8">
-          {/* Step 1: Basic Info */}
           <Card className="bg-white border-none shadow-md">
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
@@ -152,7 +162,7 @@ export default function ReservationPage() {
                 <Calendar
                   mode="single"
                   selected={date}
-                  onSelect={setDate}
+                  onSelect={(d) => { setDate(d); setSelectedTableId(""); }}
                   className="rounded-md border mx-auto bg-white shadow-sm"
                 />
               </div>
@@ -178,7 +188,7 @@ export default function ReservationPage() {
                         key={t}
                         variant={time === t ? "default" : "outline"}
                         className={cn("font-body transition-colors", time === t ? "bg-primary text-primary-foreground" : "bg-white border-primary/20")}
-                        onClick={() => setTime(t)}
+                        onClick={() => { setTime(t); setSelectedTableId(""); }}
                       >
                         {t}
                       </Button>
@@ -189,7 +199,6 @@ export default function ReservationPage() {
             </CardContent>
           </Card>
 
-          {/* Step 2: Table Selection */}
           <Card className={cn("bg-white border-none shadow-md transition-opacity duration-300", !date || !time ? "opacity-50 pointer-events-none" : "opacity-100")}>
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
@@ -202,9 +211,9 @@ export default function ReservationPage() {
                 <div className="text-center py-10">
                   <p className="animate-pulse italic text-primary">Scanning Patil Table floor plan...</p>
                 </div>
-              ) : availableTables.length > 0 ? (
+              ) : suitableTables.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {availableTables.map(table => (
+                  {suitableTables.map(table => (
                     <button
                       key={table.id}
                       onClick={() => setSelectedTableId(table.id)}
@@ -243,7 +252,6 @@ export default function ReservationPage() {
           </Card>
         </div>
 
-        {/* Sidebar Summary */}
         <div className="space-y-6">
           <Card className="sticky top-24 border-green-200 bg-green-50 shadow-xl overflow-hidden">
             <div className="h-2 bg-green-600 w-full" />

@@ -12,24 +12,13 @@ import { generateMenuDescription } from "@/ai/flows/generate-menu-description";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
-import { collection, doc } from "firebase/firestore";
+import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase";
+import { collection, doc, collectionGroup } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
   const db = useFirestore();
   const { toast } = useToast();
-
-  const [bookings] = useState([
-    { id: "B101", user: "John Doe", date: "2024-05-20", time: "19:00", guests: 2, status: "Confirmed" },
-    { id: "B102", user: "Jane Smith", date: "2024-05-20", time: "20:30", guests: 4, status: "Pending" },
-  ]);
-
-  const [orders, setOrders] = useState([
-    { id: "ORD-001", customer: "Alice Brown", total: "$84.00", items: "2x Butter Chicken, 1x Naan", status: "Preparing" },
-    { id: "ORD-002", customer: "Bob Wilson", total: "$45.00", items: "1x Biryani", status: "Delivery" },
-    { id: "ORD-003", customer: "Charlie Davis", total: "$28.00", items: "1x Paneer Tikka", status: "Delivered" },
-  ]);
 
   // AI State
   const [aiInput, setAiInput] = useState({ itemName: "", ingredients: "", cuisine: "Indian" });
@@ -40,16 +29,24 @@ export default function DashboardPage() {
   const [newTable, setNewTable] = useState({ tableNumber: "", capacity: 2, description: "" });
   const [isAddingTable, setIsAddingTable] = useState(false);
 
+  // Real Queries
   const tablesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, "restaurantTables");
   }, [db]);
-
   const { data: tables, isLoading: isLoadingTables } = useCollection(tablesQuery);
 
-  const updateOrderStatus = (id: string, newStatus: string) => {
-    setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-  };
+  const reservationsQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return collectionGroup(db, "reservations");
+  }, [db]);
+  const { data: reservations, isLoading: isLoadingReservations } = useCollection(reservationsQuery);
+
+  const ordersQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return collectionGroup(db, "foodOrders");
+  }, [db]);
+  const { data: orders, isLoading: isLoadingOrders } = useCollection(ordersQuery);
 
   const handleGenerateAI = async () => {
     if (!aiInput.itemName || !aiInput.ingredients) return;
@@ -89,6 +86,12 @@ export default function DashboardPage() {
     toast({ title: "Table Removed", description: "The table has been deleted from the floor plan." });
   };
 
+  const updateOrderStatus = (customerId: string, orderId: string, newStatus: string) => {
+    const orderRef = doc(db, "customerProfiles", customerId, "foodOrders", orderId);
+    updateDocumentNonBlocking(orderRef, { status: newStatus });
+    toast({ title: "Order Updated", description: `Status changed to ${newStatus}.` });
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
@@ -118,50 +121,57 @@ export default function DashboardPage() {
               <CardDescription>Real-time Indian cuisine delivery management.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Items</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.id}</TableCell>
-                      <TableCell>{order.customer}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{order.items}</TableCell>
-                      <TableCell>{order.total}</TableCell>
-                      <TableCell>
-                        <Badge className={cn(
-                          order.status === "Delivered" ? "bg-green-100 text-green-700" :
-                          order.status === "Delivery" ? "bg-blue-100 text-blue-700" :
-                          "bg-yellow-100 text-yellow-700"
-                        )}>
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {order.status === "Preparing" && (
-                            <Button size="sm" onClick={() => updateOrderStatus(order.id, "Delivery")}>Ship</Button>
-                          )}
-                          {order.status === "Delivery" && (
-                            <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.id, "Delivered")}>Complete</Button>
-                          )}
-                          {order.status === "Delivered" && (
-                            <CheckCircle className="h-5 w-5 text-green-600 ml-4" />
-                          )}
-                        </div>
-                      </TableCell>
+              {isLoadingOrders ? (
+                <p className="text-center py-10">Loading orders...</p>
+              ) : orders?.length === 0 ? (
+                <p className="text-center py-10 text-muted-foreground italic">No orders placed yet.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Order ID</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {orders?.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">{order.id}</TableCell>
+                        <TableCell>{new Date(order.orderDateTime).toLocaleDateString()}</TableCell>
+                        <TableCell>${order.totalAmount}</TableCell>
+                        <TableCell>
+                          <Badge className={cn(
+                            order.status === "Delivered" ? "bg-green-100 text-green-700" :
+                            order.status === "Out for Delivery" ? "bg-blue-100 text-blue-700" :
+                            "bg-yellow-100 text-yellow-700"
+                          )}>
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {order.status === "Pending" && (
+                              <Button size="sm" onClick={() => updateOrderStatus(order.customerId, order.id, "Preparing")}>Start Prep</Button>
+                            )}
+                            {order.status === "Preparing" && (
+                              <Button size="sm" onClick={() => updateOrderStatus(order.customerId, order.id, "Out for Delivery")}>Ship</Button>
+                            )}
+                            {order.status === "Out for Delivery" && (
+                              <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.customerId, order.id, "Delivered")}>Complete</Button>
+                            )}
+                            {order.status === "Delivered" && (
+                              <CheckCircle className="h-5 w-5 text-green-600 ml-4" />
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -175,43 +185,47 @@ export default function DashboardPage() {
               <CardDescription>Manage Patil Table seating and booking fees.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Schedule</TableHead>
-                    <TableHead>Guests</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bookings.map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell>{booking.id}</TableCell>
-                      <TableCell>{booking.user}</TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <p>{booking.date}</p>
-                          <p className="text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> {booking.time}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{booking.guests}</TableCell>
-                      <TableCell>
-                        <Badge className={cn(
-                          booking.status === "Confirmed" ? "bg-green-100 text-green-700" : "bg-muted"
-                        )}>
-                          {booking.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">Edit</Button>
-                      </TableCell>
+              {isLoadingReservations ? (
+                <p className="text-center py-10">Loading reservations...</p>
+              ) : reservations?.length === 0 ? (
+                <p className="text-center py-10 text-muted-foreground italic">No reservations booked yet.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Schedule</TableHead>
+                      <TableHead>Guests</TableHead>
+                      <TableHead>Table ID</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {reservations?.map((booking) => (
+                      <TableRow key={booking.id}>
+                        <TableCell>{booking.id}</TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <p>{new Date(booking.reservationDateTime).toLocaleDateString()}</p>
+                            <p className="text-muted-foreground flex items-center gap-1">
+                              <Clock className="h-3 w-3" /> {new Date(booking.reservationDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{booking.numberOfGuests}</TableCell>
+                        <TableCell className="font-mono text-xs">{booking.tableId}</TableCell>
+                        <TableCell>
+                          <Badge className={cn(
+                            booking.status === "Confirmed" ? "bg-green-100 text-green-700" : "bg-muted"
+                          )}>
+                            {booking.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -286,26 +300,25 @@ export default function DashboardPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {tables?.map((table, idx) => {
-                        // For demonstration, let's mark some as "Booked" based on index
-                        const isMockBooked = idx % 3 === 0;
+                      {tables?.map((table) => {
+                        const isBooked = reservations?.some(res => res.tableId === table.id && res.status === "Confirmed");
                         return (
-                          <TableRow key={table.id} className={cn(isMockBooked ? "bg-green-50/50" : "bg-white")}>
+                          <TableRow key={table.id} className={cn(isBooked ? "bg-green-50/50" : "bg-white")}>
                             <TableCell className="font-bold text-primary">{table.tableNumber}</TableCell>
                             <TableCell>{table.capacity} People</TableCell>
                             <TableCell className="text-xs italic text-muted-foreground">{table.description || "-"}</TableCell>
                             <TableCell>
                               <Badge 
-                                variant={isMockBooked ? "default" : "outline"} 
+                                variant={isBooked ? "default" : "outline"} 
                                 className={cn(
                                   "font-bold uppercase tracking-tighter text-[10px]",
-                                  isMockBooked ? "bg-green-600 border-green-600" : "bg-white text-muted-foreground border-muted-foreground/30"
+                                  isBooked ? "bg-green-600 border-green-600" : "bg-white text-muted-foreground border-muted-foreground/30"
                                 )}
                               >
-                                {isMockBooked ? (
-                                  <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Booked</span>
+                                {isBooked ? (
+                                  <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Booked</span>
                                 ) : (
-                                  <span className="flex items-center gap-1"><Circle className="h-3 w-3" /> Available</span>
+                                  <span className="flex items-center gap-1"><Circle className="h-3.5 w-3.5" /> Available</span>
                                 )}
                               </Badge>
                             </TableCell>
