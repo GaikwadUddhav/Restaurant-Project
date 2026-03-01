@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2, Plus, LayoutGrid, Trash2 } from "lucide-react";
+import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2, Plus, LayoutGrid, Trash2, CheckCircle2, Circle } from "lucide-react";
 import { generateMenuDescription } from "@/ai/flows/generate-menu-description";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -270,7 +270,10 @@ export default function DashboardPage() {
                 {isLoadingTables ? (
                   <p className="text-center py-10">Loading floor plan...</p>
                 ) : tables?.length === 0 ? (
-                  <p className="text-center py-10 text-muted-foreground italic">No tables defined yet.</p>
+                  <div className="text-center py-20 border-2 border-dashed rounded-3xl">
+                    <LayoutGrid className="h-12 w-12 mx-auto text-muted mb-4 opacity-20" />
+                    <p className="text-muted-foreground italic">No tables defined in Patil Table floor plan yet.</p>
+                  </div>
                 ) : (
                   <Table>
                     <TableHeader>
@@ -283,21 +286,37 @@ export default function DashboardPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {tables?.map((table) => (
-                        <TableRow key={table.id}>
-                          <TableCell className="font-bold text-green-800">{table.tableNumber}</TableCell>
-                          <TableCell>{table.capacity} People</TableCell>
-                          <TableCell className="text-xs italic">{table.description || "-"}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-white text-green-600 border-green-200">Available</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {tables?.map((table, idx) => {
+                        // For demonstration, let's mark some as "Booked" based on index
+                        const isMockBooked = idx % 3 === 0;
+                        return (
+                          <TableRow key={table.id} className={cn(isMockBooked ? "bg-green-50/50" : "bg-white")}>
+                            <TableCell className="font-bold text-primary">{table.tableNumber}</TableCell>
+                            <TableCell>{table.capacity} People</TableCell>
+                            <TableCell className="text-xs italic text-muted-foreground">{table.description || "-"}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={isMockBooked ? "default" : "outline"} 
+                                className={cn(
+                                  "font-bold uppercase tracking-tighter text-[10px]",
+                                  isMockBooked ? "bg-green-600 border-green-600" : "bg-white text-muted-foreground border-muted-foreground/30"
+                                )}
+                              >
+                                {isMockBooked ? (
+                                  <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Booked</span>
+                                ) : (
+                                  <span className="flex items-center gap-1"><Circle className="h-3 w-3" /> Available</span>
+                                )}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 )}

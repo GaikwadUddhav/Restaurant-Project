@@ -141,7 +141,7 @@ export default function ReservationPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
         <div className="lg:col-span-2 space-y-8">
           {/* Step 1: Basic Info */}
-          <Card className="bg-white">
+          <Card className="bg-white border-none shadow-md">
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" /> 1. Select Date & Guests
@@ -153,14 +153,14 @@ export default function ReservationPage() {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="rounded-md border mx-auto bg-white"
+                  className="rounded-md border mx-auto bg-white shadow-sm"
                 />
               </div>
               <div className="flex-1 space-y-6">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2"><Users className="h-4 w-4" /> Number of Guests</Label>
+                  <Label className="flex items-center gap-2 font-bold"><Users className="h-4 w-4" /> Number of Guests</Label>
                   <Select value={guests} onValueChange={(v) => { setGuests(v); setSelectedTableId(""); }}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-white border-primary/20">
                       <SelectValue placeholder="How many people?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -171,13 +171,13 @@ export default function ReservationPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2"><Clock className="h-4 w-4" /> Available Time Slots</Label>
+                  <Label className="flex items-center gap-2 font-bold"><Clock className="h-4 w-4" /> Available Time Slots</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"].map(t => (
                       <Button
                         key={t}
                         variant={time === t ? "default" : "outline"}
-                        className={cn("font-body", time === t ? "bg-green-600 hover:bg-green-700" : "bg-white")}
+                        className={cn("font-body transition-colors", time === t ? "bg-primary text-primary-foreground" : "bg-white border-primary/20")}
                         onClick={() => setTime(t)}
                       >
                         {t}
@@ -190,48 +190,53 @@ export default function ReservationPage() {
           </Card>
 
           {/* Step 2: Table Selection */}
-          <Card className={cn("bg-white", !date || !time ? "opacity-50 pointer-events-none" : "")}>
+          <Card className={cn("bg-white border-none shadow-md transition-opacity duration-300", !date || !time ? "opacity-50 pointer-events-none" : "opacity-100")}>
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
                 <UtensilsCrossed className="h-5 w-5 text-primary" /> 2. Choose Your Table
               </CardTitle>
-              <CardDescription>Only tables matching your guest count are shown.</CardDescription>
+              <CardDescription>Select a highlighted table to book it. White = Available, Green = Your Choice.</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingTables ? (
-                <p className="text-center py-10 animate-pulse italic">Checking availability...</p>
+                <div className="text-center py-10">
+                  <p className="animate-pulse italic text-primary">Scanning Patil Table floor plan...</p>
+                </div>
               ) : availableTables.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {availableTables.map(table => (
                     <button
                       key={table.id}
                       onClick={() => setSelectedTableId(table.id)}
                       className={cn(
-                        "flex flex-col p-4 border rounded-2xl text-left transition-all hover:shadow-md",
+                        "flex flex-col p-5 border-2 rounded-2xl text-left transition-all duration-300 group shadow-sm",
                         selectedTableId === table.id 
-                          ? "bg-green-50 border-green-500 ring-2 ring-green-200" 
-                          : "bg-white border-border"
+                          ? "bg-green-600 border-green-600 text-white transform scale-105" 
+                          : "bg-white border-border hover:border-green-300 hover:bg-green-50/30"
                       )}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className={cn("font-headline text-xl", selectedTableId === table.id ? "text-green-800" : "")}>
+                      <div className="flex justify-between items-start mb-3">
+                        <span className={cn("font-headline text-2xl font-bold", selectedTableId === table.id ? "text-white" : "text-primary")}>
                           {table.tableNumber}
                         </span>
-                        <span className={cn("text-xs px-2 py-0.5 rounded-full", selectedTableId === table.id ? "bg-green-200 text-green-800" : "bg-muted")}>
-                          Cap: {table.capacity}
+                        <span className={cn("text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-wider", selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground")}>
+                          Seats {table.capacity}
                         </span>
                       </div>
-                      <p className={cn("text-sm leading-snug", selectedTableId === table.id ? "text-green-700" : "text-muted-foreground")}>
-                        {table.description || "Perfect for intimate Indian dining."}
+                      <p className={cn("text-xs leading-relaxed", selectedTableId === table.id ? "text-white/90" : "text-muted-foreground")}>
+                        {table.description || "Perfect for authentic Indian dining."}
                       </p>
+                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase", selectedTableId === table.id ? "text-white" : "text-green-600 opacity-0 group-hover:opacity-100 transition-opacity")}>
+                        <CheckCircle2 className="h-3.5 w-3.5" /> {selectedTableId === table.id ? "Selected for Booking" : "Select to Book"}
+                      </div>
                     </button>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 bg-muted/30 rounded-3xl border border-dashed">
-                  <AlertCircle className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
-                  <p className="font-headline text-xl mb-1">No tables available</p>
-                  <p className="text-sm text-muted-foreground">Try a different guest count or time slot.</p>
+                <div className="text-center py-16 bg-muted/20 rounded-3xl border-2 border-dashed border-muted">
+                  <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-50" />
+                  <p className="font-headline text-2xl mb-2 text-muted-foreground">No matching tables</p>
+                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">Try changing the number of guests or choosing another time slot.</p>
                 </div>
               )}
             </CardContent>
@@ -240,51 +245,61 @@ export default function ReservationPage() {
 
         {/* Sidebar Summary */}
         <div className="space-y-6">
-          <Card className="sticky top-24 border-green-200 bg-green-50 shadow-lg">
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl text-green-800">Your Booking</CardTitle>
-              <CardDescription>Reservation summary</CardDescription>
+          <Card className="sticky top-24 border-green-200 bg-green-50 shadow-xl overflow-hidden">
+            <div className="h-2 bg-green-600 w-full" />
+            <CardHeader className="pb-4">
+              <CardTitle className="font-headline text-2xl text-green-800">Reservation Summary</CardTitle>
+              <CardDescription className="text-green-700/70">Review your Patil Table details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Date:</span>
-                <span className="font-medium">{date?.toLocaleDateString() || "---"}</span>
+            <CardContent className="space-y-5">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-700/60">Date</span>
+                  <span className="font-headline text-lg text-green-900">{date?.toLocaleDateString() || "---"}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-700/60">Time</span>
+                  <span className="font-headline text-lg text-green-900">{time || "---"}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-700/60">Guests</span>
+                  <span className="font-headline text-lg text-green-900">{guests} People</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-green-700/60">Table</span>
+                  <span className="font-headline text-lg text-green-600 font-bold">
+                    {allTables?.find(t => t.id === selectedTableId)?.tableNumber || "---"}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Time:</span>
-                <span className="font-medium">{time || "---"}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Guests:</span>
-                <span className="font-medium">{guests} People</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Table:</span>
-                <span className="font-medium text-green-700">
-                  {allTables?.find(t => t.id === selectedTableId)?.tableNumber || "---"}
-                </span>
-              </div>
+              
               <Separator className="bg-green-200" />
-              <div className="flex justify-between items-center font-bold text-lg pt-2 text-green-900">
-                <span>Reservation Fee:</span>
-                <span>$50.00</span>
+              
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-bold text-green-800">Booking Fee</span>
+                <span className="font-headline text-2xl text-green-900">$50.00</span>
               </div>
+              
               <div className="pt-4">
                 <Button 
-                  className="w-full font-headline py-6 text-lg bg-green-600 hover:bg-green-700" 
+                  className="w-full font-headline py-7 text-xl bg-green-600 hover:bg-green-700 shadow-lg shadow-green-900/20" 
                   size="lg"
                   disabled={isSubmitting || !selectedTableId || isUserLoading}
                   onClick={handleBooking}
                 >
-                  {isSubmitting ? "Processing..." : (
-                    <span className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5" /> Confirm & Book Table
+                  {isSubmitting ? "Securing Table..." : (
+                    <span className="flex items-center gap-3">
+                      <CreditCard className="h-6 w-6" /> Confirm & Book
                     </span>
                   )}
                 </Button>
-                <p className="text-[10px] text-center text-green-700 mt-4 uppercase tracking-widest font-bold">
-                  Secure Encrypted Payment
-                </p>
+                <div className="flex items-center justify-center gap-2 mt-6">
+                  <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
+                  <p className="text-[10px] text-center text-green-700 uppercase tracking-[0.2em] font-black">
+                    Secure Payment Gateway
+                  </p>
+                  <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
+                </div>
               </div>
             </CardContent>
           </Card>
