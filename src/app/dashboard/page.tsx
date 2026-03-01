@@ -1,18 +1,25 @@
+
 "use client";
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2 } from "lucide-react";
+import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2, Plus, LayoutGrid, Trash2 } from "lucide-react";
 import { generateMenuDescription } from "@/ai/flows/generate-menu-description";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
+import { collection, doc } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
+  const db = useFirestore();
+  const { toast } = useToast();
+
   const [bookings] = useState([
     { id: "B101", user: "John Doe", date: "2024-05-20", time: "19:00", guests: 2, status: "Confirmed" },
     { id: "B102", user: "Jane Smith", date: "2024-05-20", time: "20:30", guests: 4, status: "Pending" },
@@ -24,9 +31,21 @@ export default function DashboardPage() {
     { id: "ORD-003", customer: "Charlie Davis", total: "$28.00", items: "1x Pasta", status: "Delivered" },
   ]);
 
+  // AI State
   const [aiInput, setAiInput] = useState({ itemName: "", ingredients: "", cuisine: "" });
   const [aiResult, setAiResult] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Table Management State
+  const [newTable, setNewTable] = useState({ tableNumber: "", capacity: 2, description: "" });
+  const [isAddingTable, setIsAddingTable] = useState(false);
+
+  const tablesQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return collection(db, "restaurantTables");
+  }, [db]);
+
+  const { data: tables, isLoading: isLoadingTables } = useCollection(tablesQuery);
 
   const updateOrderStatus = (id: string, newStatus: string) => {
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
@@ -49,25 +68,45 @@ export default function DashboardPage() {
     }
   };
 
+  const handleAddTable = () => {
+    if (!newTable.tableNumber) return;
+    setIsAddingTable(true);
+    const tableRef = collection(db, "restaurantTables");
+    const id = Math.random().toString(36).substr(2, 9);
+    
+    addDocumentNonBlocking(tableRef, { ...newTable, id })
+      .then(() => {
+        setNewTable({ tableNumber: "", capacity: 2, description: "" });
+        setIsAddingTable(false);
+        toast({ title: "Table Added", description: `Table ${newTable.tableNumber} is now available.` });
+      })
+      .catch(() => setIsAddingTable(false));
+  };
+
+  const handleDeleteTable = (id: string) => {
+    const tableRef = doc(db, "restaurantTables", id);
+    deleteDocumentNonBlocking(tableRef);
+    toast({ title: "Table Removed", description: "The table has been deleted." });
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="flex justify-between items-end mb-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
         <div>
           <h1 className="font-headline text-5xl mb-2 text-primary">Owner Dashboard</h1>
           <p className="text-muted-foreground">Manage your restaurant operations and menus.</p>
         </div>
-        <div className="hidden md:block">
-          <Badge variant="outline" className="text-sm px-4 py-1 border-primary/30">
-            Store Status: <span className="text-green-600 font-bold ml-1">Open</span>
-          </Badge>
-        </div>
+        <Badge variant="outline" className="text-sm px-4 py-1 border-primary/30">
+          Store Status: <span className="text-green-600 font-bold ml-1">Open</span>
+        </Badge>
       </div>
 
       <Tabs defaultValue="orders" className="space-y-8">
-        <TabsList className="bg-muted p-1 rounded-xl">
-          <TabsTrigger value="orders" className="rounded-lg px-8">Food Orders</TabsTrigger>
-          <TabsTrigger value="bookings" className="rounded-lg px-8">Table Bookings</TabsTrigger>
-          <TabsTrigger value="ai-tools" className="rounded-lg px-8">AI Menu Designer</TabsTrigger>
+        <TabsList className="bg-muted p-1 rounded-xl w-full md:w-auto overflow-x-auto justify-start flex">
+          <TabsTrigger value="orders" className="rounded-lg px-8">Orders</TabsTrigger>
+          <TabsTrigger value="bookings" className="rounded-lg px-8">Bookings</TabsTrigger>
+          <TabsTrigger value="tables" className="rounded-lg px-8">Tables</TabsTrigger>
+          <TabsTrigger value="ai-tools" className="rounded-lg px-8">AI Designer</TabsTrigger>
         </TabsList>
 
         <TabsContent value="orders">
@@ -173,6 +212,92 @@ export default function DashboardPage() {
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="tables">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                  <Plus className="h-5 w-5 text-primary" /> Add New Table
+                </CardTitle>
+                <CardDescription>Define table capacity and numbers.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Table Number/Name</Label>
+                  <Input 
+                    placeholder="e.g., Table 12, Booth A" 
+                    value={newTable.tableNumber}
+                    onChange={e => setNewTable({...newTable, tableNumber: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Capacity (Guests)</Label>
+                  <Input 
+                    type="number"
+                    value={newTable.capacity}
+                    onChange={e => setNewTable({...newTable, capacity: parseInt(e.target.value)})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Input 
+                    placeholder="e.g., Window seat, Quiet corner" 
+                    value={newTable.description}
+                    onChange={e => setNewTable({...newTable, description: e.target.value})}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={handleAddTable} disabled={isAddingTable}>
+                  {isAddingTable ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+                  Add Table
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                  <LayoutGrid className="h-5 w-5 text-primary" /> Floor Plan Management
+                </CardTitle>
+                <CardDescription>Your current available seating arrangements.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingTables ? (
+                  <p className="text-center py-10">Loading floor plan...</p>
+                ) : tables?.length === 0 ? (
+                  <p className="text-center py-10 text-muted-foreground italic">No tables defined yet.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Table</TableHead>
+                        <TableHead>Capacity</TableHead>
+                        <TableHead>Features</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {tables?.map((table) => (
+                        <TableRow key={table.id}>
+                          <TableCell className="font-bold">{table.tableNumber}</TableCell>
+                          <TableCell>{table.capacity} People</TableCell>
+                          <TableCell className="text-xs italic">{table.description || "-"}</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="ai-tools">
