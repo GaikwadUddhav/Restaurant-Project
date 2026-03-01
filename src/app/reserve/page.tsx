@@ -12,10 +12,11 @@ import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
+import { collection } from "firebase/firestore";
+import { cn } from "@/lib/utils";
 
 export default function ReservationPage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
 
@@ -42,11 +43,11 @@ export default function ReservationPage() {
   }, []);
 
   const handleBooking = () => {
-    if (!user) {
+    if (isUserLoading || !user) {
       toast({
         variant: "destructive",
-        title: "Sign in required",
-        description: "Please sign in to book a table.",
+        title: "Session initializing",
+        description: "Please wait a moment while we set up your secure session.",
       });
       return;
     }
@@ -264,20 +265,15 @@ export default function ReservationPage() {
                 <Button 
                   className="w-full font-headline py-6 text-lg" 
                   size="lg"
-                  disabled={isSubmitting || !selectedTableId || !user}
+                  disabled={isSubmitting || !selectedTableId || isUserLoading}
                   onClick={handleBooking}
                 >
                   {isSubmitting ? "Processing..." : (
                     <span className="flex items-center gap-2">
-                      <CreditCard className="h-5 w-5" /> {user ? "Confirm & Pay $50" : "Sign in to Reserve"}
+                      <CreditCard className="h-5 w-5" /> Confirm & Pay $50
                     </span>
                   )}
                 </Button>
-                {!user && (
-                   <p className="text-[10px] text-center text-destructive mt-2 uppercase font-bold">
-                    Login required for payment
-                  </p>
-                )}
                 <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-widest font-bold">
                   Secure Encrypted Payment
                 </p>
@@ -288,8 +284,4 @@ export default function ReservationPage() {
       </div>
     </div>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
 }

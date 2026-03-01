@@ -3,13 +3,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Utensils, Calendar, ShoppingBag, LayoutDashboard, Menu, LogOut, User } from "lucide-react";
+import { Utensils, Calendar, ShoppingBag, LayoutDashboard, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useUser, useAuth } from "@/firebase";
-import { signOut } from "firebase/auth";
 
 const navItems = [
   { name: "Menu", href: "/menu", icon: Utensils },
@@ -21,12 +19,6 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
-  const auth = useAuth();
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,21 +42,6 @@ export function Navbar() {
               {item.name}
             </Link>
           ))}
-          
-          {user ? (
-            <div className="flex items-center gap-4 ml-4">
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <User className="h-3 w-3" /> {user.email?.split('@')[0]}
-              </span>
-              <Button variant="ghost" size="sm" onClick={handleSignOut} className="font-headline text-destructive hover:text-destructive hover:bg-destructive/10">
-                <LogOut className="h-4 w-4 mr-1" /> Sign Out
-              </Button>
-            </div>
-          ) : (
-            <Button variant="secondary" size="sm" asChild className="font-headline">
-              <Link href="/login">Sign In</Link>
-            </Button>
-          )}
         </nav>
 
         {/* Mobile Navigation */}
@@ -90,16 +67,6 @@ export function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              
-              {user ? (
-                <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false); }} className="mt-4 font-headline text-destructive">
-                  <LogOut className="h-5 w-5 mr-2" /> Sign Out
-                </Button>
-              ) : (
-                <Button variant="secondary" asChild className="mt-4 font-headline">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>Sign In</Link>
-                </Button>
-              )}
             </div>
           </SheetContent>
         </Sheet>
