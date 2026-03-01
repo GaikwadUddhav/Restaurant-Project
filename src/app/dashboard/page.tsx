@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2, Plus, LayoutGrid, Trash2, CheckCircle2, Circle } from "lucide-react";
+import { Utensils, Calendar, CheckCircle, Clock, Sparkles, Loader2, Plus, LayoutGrid, Trash2, CheckCircle2, Circle, FastForward } from "lucide-react";
 import { generateMenuDescription } from "@/ai/flows/generate-menu-description";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,6 +80,20 @@ export default function DashboardPage() {
       .catch(() => setIsAddingTable(false));
   };
 
+  const handleBulkAdd = () => {
+    const tableRef = collection(db, "restaurantTables");
+    for (let i = 1; i <= 15; i++) {
+      const id = `table-auto-${i}-${Math.random().toString(36).substr(2, 5)}`;
+      addDocumentNonBlocking(tableRef, {
+        id,
+        tableNumber: `Table ${i}`,
+        capacity: i % 4 === 0 ? 6 : (i % 2 === 0 ? 4 : 2),
+        description: "Standard restaurant seating."
+      });
+    }
+    toast({ title: "Bulk Action", description: "Creating 15 tables..." });
+  };
+
   const handleDeleteTable = (id: string) => {
     const tableRef = doc(db, "restaurantTables", id);
     deleteDocumentNonBlocking(tableRef);
@@ -99,9 +113,14 @@ export default function DashboardPage() {
           <h1 className="font-headline text-5xl mb-2 text-primary">Owner Dashboard</h1>
           <p className="text-muted-foreground">Manage Patil Table Indian restaurant operations.</p>
         </div>
-        <Badge variant="outline" className="text-sm px-4 py-1 border-primary/30">
-          Store Status: <span className="text-green-600 font-bold ml-1">Open</span>
-        </Badge>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={handleBulkAdd} className="flex items-center gap-2">
+            <FastForward className="h-4 w-4" /> Seed 15 Tables
+          </Button>
+          <Badge variant="outline" className="text-sm px-4 py-1 border-primary/30 h-9">
+            Store Status: <span className="text-green-600 font-bold ml-1">Open</span>
+          </Badge>
+        </div>
       </div>
 
       <Tabs defaultValue="orders" className="space-y-8">
@@ -283,58 +302,62 @@ export default function DashboardPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
                   <LayoutGrid className="h-5 w-5" /> Floor Plan Overview
                 </CardTitle>
-                <CardDescription>Green = Currently Booked, White = Available for selection.</CardDescription>
+                <CardDescription>
+                  <span className="text-green-600 font-bold">Green = Booked</span>, White = Available.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingTables ? (
                   <div className="text-center py-10"><Loader2 className="animate-spin h-6 w-6 mx-auto mb-2" />Loading floor plan...</div>
-                ) : tables?.length === 0 ? (
+                ) : !tables || tables.length === 0 ? (
                   <div className="text-center py-20 border-2 border-dashed rounded-3xl">
                     <LayoutGrid className="h-12 w-12 mx-auto text-muted mb-4 opacity-20" />
-                    <p className="text-muted-foreground italic">No tables defined yet. Start by adding one!</p>
+                    <p className="text-muted-foreground italic">No tables defined yet. Start by adding one or using "Seed 15 Tables"!</p>
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Table</TableHead>
-                        <TableHead>Capacity</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {tables?.map((table) => {
-                        const isBooked = reservations?.some(res => res.tableId === table.id && res.status === "Confirmed");
-                        return (
-                          <TableRow key={table.id} className={cn(isBooked ? "bg-green-50/50" : "bg-white")}>
-                            <TableCell className="font-bold text-primary">{table.tableNumber}</TableCell>
-                            <TableCell>{table.capacity} People</TableCell>
-                            <TableCell>
-                              <Badge 
-                                variant={isBooked ? "default" : "outline"} 
-                                className={cn(
-                                  "font-bold uppercase tracking-tighter text-[10px]",
-                                  isBooked ? "bg-green-600 border-green-600 text-white" : "bg-white text-muted-foreground border-muted-foreground/30"
-                                )}
-                              >
-                                {isBooked ? (
-                                  <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Booked</span>
-                                ) : (
-                                  <span className="flex items-center gap-1"><Circle className="h-3.5 w-3.5" /> Available</span>
-                                )}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                  <div className="max-h-[500px] overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Table</TableHead>
+                          <TableHead>Capacity</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {tables?.map((table) => {
+                          const isBooked = reservations?.some(res => res.tableId === table.id && res.status === "Confirmed");
+                          return (
+                            <TableRow key={table.id} className={cn(isBooked ? "bg-green-50/50" : "bg-white")}>
+                              <TableCell className="font-bold text-primary">{table.tableNumber}</TableCell>
+                              <TableCell>{table.capacity} People</TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={isBooked ? "default" : "outline"} 
+                                  className={cn(
+                                    "font-bold uppercase tracking-tighter text-[10px]",
+                                    isBooked ? "bg-green-600 border-green-600 text-white" : "bg-white text-muted-foreground border-muted-foreground/30"
+                                  )}
+                                >
+                                  {isBooked ? (
+                                    <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> Booked</span>
+                                  ) : (
+                                    <span className="flex items-center gap-1"><Circle className="h-3.5 w-3.5" /> Available</span>
+                                  )}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Button variant="ghost" size="sm" onClick={() => handleDeleteTable(table.id)}>
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 )}
               </CardContent>
             </Card>

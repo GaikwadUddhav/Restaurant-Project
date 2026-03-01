@@ -56,11 +56,17 @@ export default function ReservationPage() {
   }, [date, time]);
 
   // Filter tables based on guest count and availability
+  // If no tables are in DB, we provide 15 sample tables for the user to pick from
   const displayTables = useMemo(() => {
-    if (!allTables) return [];
+    const tablesToUse = allTables && allTables.length > 0 ? allTables : Array.from({ length: 15 }, (_, i) => ({
+      id: `table-v-${i + 1}`,
+      tableNumber: `Table ${i + 1}`,
+      capacity: (i % 5 === 0) ? 6 : (i % 2 === 0 ? 4 : 2),
+      description: "A prime spot for your Indian dining experience.",
+    }));
     
     // First, filter by capacity as a hard requirement
-    const byCapacity = allTables.filter(table => table.capacity >= parseInt(guests));
+    const byCapacity = tablesToUse.filter(table => table.capacity >= parseInt(guests));
     
     // Map them with their availability status for the selected date/time
     return byCapacity.map(table => {
@@ -125,7 +131,7 @@ export default function ReservationPage() {
   };
 
   if (isSuccess) {
-    const selectedTable = allTables?.find(t => t.id === selectedTableId);
+    const selectedTable = displayTables.find(t => t.id === selectedTableId);
     return (
       <div className="container mx-auto px-4 py-20 max-w-2xl text-center">
         <div className="bg-card border rounded-3xl p-12 shadow-sm">
@@ -168,10 +174,10 @@ export default function ReservationPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="font-headline text-5xl mb-2 text-primary">Reserve Your Table</h1>
-        <p className="text-muted-foreground text-lg">Choose a preferred table and time for your Patil Table experience.</p>
+        <p className="text-muted-foreground text-lg">Choose from 15 preferred table options for your Patil Table experience.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
         <div className="lg:col-span-2 space-y-8">
           <Card className="bg-white border-none shadow-md">
             <CardHeader>
@@ -231,7 +237,7 @@ export default function ReservationPage() {
                 <UtensilsCrossed className="h-5 w-5" /> 2. Pick a Table
               </CardTitle>
               <CardDescription>
-                White = Available, <span className="text-green-600 font-bold">Green = Your Selection</span>, Gray = Occupied.
+                <span className="text-green-600 font-bold">Green = Selected</span>, White = Available, Gray = Booked.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -241,14 +247,14 @@ export default function ReservationPage() {
                   <p className="italic text-primary">Checking floor plan...</p>
                 </div>
               ) : displayTables.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                   {displayTables.map(table => (
                     <button
                       key={table.id}
                       disabled={table.isBooked}
                       onClick={() => setSelectedTableId(table.id)}
                       className={cn(
-                        "flex flex-col p-5 border-2 rounded-2xl text-left transition-all duration-300 group shadow-sm",
+                        "flex flex-col p-3 border-2 rounded-xl text-center transition-all duration-300 group shadow-sm",
                         selectedTableId === table.id 
                           ? "bg-green-600 border-green-600 text-white transform scale-105 z-10" 
                           : table.isBooked
@@ -256,37 +262,18 @@ export default function ReservationPage() {
                             : "bg-white border-border hover:border-green-400 hover:shadow-md"
                       )}
                     >
-                      <div className="flex justify-between items-start mb-3">
-                        <span className={cn(
-                          "font-headline text-2xl font-bold", 
-                          selectedTableId === table.id ? "text-white" : table.isBooked ? "text-muted-foreground" : "text-primary"
-                        )}>
-                          {table.tableNumber}
-                        </span>
-                        <span className={cn(
-                          "text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-wider", 
-                          selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
-                        )}>
-                          Seats {table.capacity}
-                        </span>
-                      </div>
-                      <p className={cn(
-                        "text-xs leading-relaxed mb-4", 
-                        selectedTableId === table.id ? "text-white/90" : "text-muted-foreground"
+                      <span className={cn(
+                        "font-headline text-lg font-bold block mb-1", 
+                        selectedTableId === table.id ? "text-white" : table.isBooked ? "text-muted-foreground" : "text-primary"
                       )}>
-                        {table.isBooked ? "Currently reserved for this time." : (table.description || "A wonderful spot for Indian dining.")}
-                      </p>
-                      <div className={cn(
-                        "flex items-center gap-1.5 text-[10px] font-bold uppercase transition-opacity", 
-                        selectedTableId === table.id 
-                          ? "text-white opacity-100" 
-                          : table.isBooked 
-                            ? "text-muted-foreground opacity-100" 
-                            : "text-green-600 opacity-0 group-hover:opacity-100"
+                        {table.tableNumber}
+                      </span>
+                      <span className={cn(
+                        "text-[9px] uppercase font-bold px-1.5 py-0.5 rounded-full", 
+                        selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
                       )}>
-                        {table.isBooked ? <AlertCircle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                        {table.isBooked ? "Unavailable" : selectedTableId === table.id ? "Selected" : "Pick this table"}
-                      </div>
+                        {table.capacity} Seats
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -305,7 +292,7 @@ export default function ReservationPage() {
           <Card className="sticky top-24 border-green-200 bg-green-50 shadow-xl overflow-hidden">
             <div className="h-2 bg-green-600 w-full" />
             <CardHeader className="pb-4">
-              <CardTitle className="font-headline text-2xl text-green-800">Booking Details</CardTitle>
+              <CardTitle className="font-headline text-2xl text-green-800">Reservation Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="space-y-3">
@@ -324,7 +311,7 @@ export default function ReservationPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold uppercase tracking-wider text-green-700/60">Table</span>
                   <span className="font-headline text-lg text-green-600 font-bold">
-                    {allTables?.find(t => t.id === selectedTableId)?.tableNumber || "---"}
+                    {displayTables.find(t => t.id === selectedTableId)?.tableNumber || "---"}
                   </span>
                 </div>
               </div>
@@ -353,13 +340,9 @@ export default function ReservationPage() {
                     </span>
                   )}
                 </Button>
-                <div className="flex items-center justify-center gap-2 mt-6">
-                  <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
-                  <p className="text-[10px] text-center text-green-700 uppercase tracking-[0.2em] font-black">
-                    Secure Indian Payment
-                  </p>
-                  <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
-                </div>
+                <p className="text-[10px] text-center text-green-700 uppercase tracking-[0.2em] font-black mt-6">
+                  Secure Patil Table Reservation
+                </p>
               </div>
             </CardContent>
           </Card>
