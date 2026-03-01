@@ -56,8 +56,8 @@ export default function ReservationPage() {
   }, [date, time]);
 
   // Filter tables based on guest count and availability
-  // If no tables are in DB, we provide 15 sample tables for the user to pick from
   const displayTables = useMemo(() => {
+    // If no tables are in DB, we provide 15 sample tables
     const tablesToUse = allTables && allTables.length > 0 ? allTables : Array.from({ length: 15 }, (_, i) => ({
       id: `table-v-${i + 1}`,
       tableNumber: `Table ${i + 1}`,
@@ -116,10 +116,8 @@ export default function ReservationPage() {
       createdAt: new Date().toISOString()
     };
 
-    // Use setDocumentNonBlocking for deterministic ID creation
     setDocumentNonBlocking(reservationRef, reservationData, { merge: true });
     
-    // Proceed optimistically
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
