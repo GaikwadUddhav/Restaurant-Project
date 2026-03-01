@@ -4,7 +4,7 @@ This is a Next.js 15 application built in Firebase Studio, featuring a real-time
 
 ## How to push to your GitHub Repository
 
-To push this code to `https://github.com/Abhi71-star/workp1.git`, follow these steps on your local machine:
+To push this code to `git@github.com:Abhi71-star/workp1.git`, follow these steps on your local machine:
 
 1. **Download the project files** from Firebase Studio.
 2. **Open your terminal** in the root directory of the project.
@@ -15,7 +15,7 @@ To push this code to `https://github.com/Abhi71-star/workp1.git`, follow these s
 git init
 
 # Add the remote repository
-git remote add origin https://github.com/Abhi71-star/workp1.git
+git remote add origin git@github.com:Abhi71-star/workp1.git
 
 # Stage all files
 git add .
