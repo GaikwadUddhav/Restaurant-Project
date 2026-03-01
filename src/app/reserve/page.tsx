@@ -9,10 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle } from "lucide-react";
+import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useCollection, useUser, useFirestore, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
-import { collection, collectionGroup } from "firebase/firestore";
+import { useCollection, useUser, useFirestore, useMemoFirebase, setDocumentNonBlocking } from "@/firebase";
+import { collection, collectionGroup, doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
 export default function ReservationPage() {
@@ -77,7 +77,7 @@ export default function ReservationPage() {
     if (isUserLoading || !user) {
       toast({
         variant: "destructive",
-        title: "Session initializing",
+        title: "Initializing session",
         description: "Please wait a moment while we set up your secure session.",
       });
       return;
@@ -86,8 +86,8 @@ export default function ReservationPage() {
     if (!date || !time || !selectedTableId) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please select a date, time, and an available table.",
+        title: "Selection Incomplete",
+        description: "Please pick a date, time, and an available table to continue.",
       });
       return;
     }
@@ -95,6 +95,7 @@ export default function ReservationPage() {
     setIsSubmitting(true);
 
     const reservationId = Math.random().toString(36).substr(2, 9);
+    const reservationRef = doc(db, "customerProfiles", user.uid, "reservations", reservationId);
     
     const reservationData = {
       id: reservationId,
@@ -109,25 +110,18 @@ export default function ReservationPage() {
       createdAt: new Date().toISOString()
     };
 
-    const reservationsRef = collection(db, "customerProfiles", user.uid, "reservations");
+    // Use setDocumentNonBlocking for deterministic ID creation
+    setDocumentNonBlocking(reservationRef, reservationData, { merge: true });
     
-    addDocumentNonBlocking(reservationsRef, reservationData)
-      .then(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        toast({
-          title: "Table Reserved!",
-          description: "Your $50 booking fee has been processed successfully.",
-        });
-      })
-      .catch(() => {
-        setIsSubmitting(false);
-        toast({
-          variant: "destructive",
-          title: "Booking Failed",
-          description: "We couldn't process your reservation. Please try again.",
-        });
+    // Proceed optimistically
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      toast({
+        title: "Reservation Successful",
+        description: "Your table at Patil Table has been reserved.",
       });
+    }, 800);
   };
 
   if (isSuccess) {
@@ -138,9 +132,9 @@ export default function ReservationPage() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-12 w-12 text-green-600" />
           </div>
-          <h1 className="font-headline text-4xl mb-4 text-green-700">Reservation Confirmed!</h1>
+          <h1 className="font-headline text-4xl mb-4 text-green-700">Confirmed!</h1>
           <p className="text-muted-foreground mb-8 text-lg">
-            Thank you for choosing Patil Table. We've reserved <strong>{selectedTable?.tableNumber}</strong> for you.
+            We've reserved <strong>{selectedTable?.tableNumber}</strong> for your Indian feast.
           </p>
           <div className="bg-background rounded-2xl p-6 text-left border mb-8">
             <div className="grid grid-cols-2 gap-4">
@@ -158,12 +152,12 @@ export default function ReservationPage() {
               </div>
               <div>
                 <p className="text-xs uppercase text-muted-foreground font-bold mb-1">Table</p>
-                <p className="font-medium">{selectedTable?.tableNumber}</p>
+                <p className="font-medium text-green-600 font-bold">{selectedTable?.tableNumber}</p>
               </div>
             </div>
           </div>
           <Button asChild className="w-full font-headline bg-green-600 hover:bg-green-700">
-            <Link href="/">Return Home</Link>
+            <Link href="/">Back to Home</Link>
           </Button>
         </div>
       </div>
@@ -173,16 +167,16 @@ export default function ReservationPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="font-headline text-5xl mb-2 text-primary">Book a Table</h1>
-        <p className="text-muted-foreground text-lg">Real-time availability for an exquisite Patil Table experience.</p>
+        <h1 className="font-headline text-5xl mb-2 text-primary">Reserve Your Table</h1>
+        <p className="text-muted-foreground text-lg">Choose a preferred table and time for your Patil Table experience.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
         <div className="lg:col-span-2 space-y-8">
           <Card className="bg-white border-none shadow-md">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-primary" /> 1. Select Date & Guests
+              <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                <CalendarDays className="h-5 w-5" /> 1. Select Date & Guests
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col md:flex-row gap-8">
@@ -192,6 +186,7 @@ export default function ReservationPage() {
                   selected={date}
                   onSelect={(d) => { setDate(d); setSelectedTableId(""); }}
                   className="rounded-md border mx-auto bg-white shadow-sm"
+                  disabled={(d) => d < new Date(new Date().setHours(0,0,0,0))}
                 />
               </div>
               <div className="flex-1 space-y-6">
@@ -209,13 +204,16 @@ export default function ReservationPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2 font-bold"><Clock className="h-4 w-4" /> Available Time Slots</Label>
+                  <Label className="flex items-center gap-2 font-bold"><Clock className="h-4 w-4" /> Choose Time Slot</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00"].map(t => (
                       <Button
                         key={t}
                         variant={time === t ? "default" : "outline"}
-                        className={cn("font-body transition-colors", time === t ? "bg-primary text-primary-foreground" : "bg-white border-primary/20")}
+                        className={cn(
+                          "font-body transition-all", 
+                          time === t ? "bg-primary text-primary-foreground scale-105" : "bg-white border-primary/20 hover:border-primary/50"
+                        )}
                         onClick={() => { setTime(t); setSelectedTableId(""); }}
                       >
                         {t}
@@ -227,17 +225,20 @@ export default function ReservationPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn("bg-white border-none shadow-md transition-opacity duration-300", !date || !time ? "opacity-50 pointer-events-none" : "opacity-100")}>
+          <Card className={cn("bg-white border-none shadow-md transition-all duration-300", !date || !time ? "opacity-40 grayscale pointer-events-none" : "opacity-100")}>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <UtensilsCrossed className="h-5 w-5 text-primary" /> 2. Choose Your Table
+              <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                <UtensilsCrossed className="h-5 w-5" /> 2. Pick a Table
               </CardTitle>
-              <CardDescription>Select a table to book it. White = Available, Green = Your Choice, Gray = Already Booked.</CardDescription>
+              <CardDescription>
+                White = Available, <span className="text-green-600 font-bold">Green = Your Selection</span>, Gray = Occupied.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingTables ? (
                 <div className="text-center py-10">
-                  <p className="animate-pulse italic text-primary">Scanning Patil Table floor plan...</p>
+                  <Loader2 className="animate-spin h-8 w-8 mx-auto text-primary mb-2" />
+                  <p className="italic text-primary">Checking floor plan...</p>
                 </div>
               ) : displayTables.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -249,32 +250,42 @@ export default function ReservationPage() {
                       className={cn(
                         "flex flex-col p-5 border-2 rounded-2xl text-left transition-all duration-300 group shadow-sm",
                         selectedTableId === table.id 
-                          ? "bg-green-600 border-green-600 text-white transform scale-105" 
+                          ? "bg-green-600 border-green-600 text-white transform scale-105 z-10" 
                           : table.isBooked
                             ? "bg-muted border-muted text-muted-foreground cursor-not-allowed opacity-60"
-                            : "bg-white border-border hover:border-green-300 hover:bg-green-50/30"
+                            : "bg-white border-border hover:border-green-400 hover:shadow-md"
                       )}
                     >
                       <div className="flex justify-between items-start mb-3">
-                        <span className={cn("font-headline text-2xl font-bold", selectedTableId === table.id ? "text-white" : table.isBooked ? "text-muted-foreground" : "text-primary")}>
+                        <span className={cn(
+                          "font-headline text-2xl font-bold", 
+                          selectedTableId === table.id ? "text-white" : table.isBooked ? "text-muted-foreground" : "text-primary"
+                        )}>
                           {table.tableNumber}
                         </span>
-                        <span className={cn("text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-wider", selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground")}>
+                        <span className={cn(
+                          "text-[10px] uppercase font-bold px-2 py-1 rounded-full tracking-wider", 
+                          selectedTableId === table.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
+                        )}>
                           Seats {table.capacity}
                         </span>
                       </div>
-                      <p className={cn("text-xs leading-relaxed", selectedTableId === table.id ? "text-white/90" : "text-muted-foreground")}>
-                        {table.isBooked ? "This table is already reserved for this time." : (table.description || "Perfect for authentic Indian dining.")}
+                      <p className={cn(
+                        "text-xs leading-relaxed mb-4", 
+                        selectedTableId === table.id ? "text-white/90" : "text-muted-foreground"
+                      )}>
+                        {table.isBooked ? "Currently reserved for this time." : (table.description || "A wonderful spot for Indian dining.")}
                       </p>
-                      <div className={cn("mt-4 flex items-center gap-1.5 text-[10px] font-bold uppercase", 
+                      <div className={cn(
+                        "flex items-center gap-1.5 text-[10px] font-bold uppercase transition-opacity", 
                         selectedTableId === table.id 
-                          ? "text-white" 
+                          ? "text-white opacity-100" 
                           : table.isBooked 
-                            ? "text-muted-foreground" 
-                            : "text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            ? "text-muted-foreground opacity-100" 
+                            : "text-green-600 opacity-0 group-hover:opacity-100"
                       )}>
                         {table.isBooked ? <AlertCircle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                        {table.isBooked ? "Unavailable" : selectedTableId === table.id ? "Selected for Booking" : "Select to Book"}
+                        {table.isBooked ? "Unavailable" : selectedTableId === table.id ? "Selected" : "Pick this table"}
                       </div>
                     </button>
                   ))}
@@ -283,7 +294,7 @@ export default function ReservationPage() {
                 <div className="text-center py-16 bg-muted/20 rounded-3xl border-2 border-dashed border-muted">
                   <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-50" />
                   <p className="font-headline text-2xl mb-2 text-muted-foreground">No matching tables</p>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">Try changing the number of guests or choosing another time slot.</p>
+                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">Try changing the number of guests or picking another time slot.</p>
                 </div>
               )}
             </CardContent>
@@ -294,8 +305,7 @@ export default function ReservationPage() {
           <Card className="sticky top-24 border-green-200 bg-green-50 shadow-xl overflow-hidden">
             <div className="h-2 bg-green-600 w-full" />
             <CardHeader className="pb-4">
-              <CardTitle className="font-headline text-2xl text-green-800">Reservation Summary</CardTitle>
-              <CardDescription className="text-green-700/70">Review your Patil Table details</CardDescription>
+              <CardTitle className="font-headline text-2xl text-green-800">Booking Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="space-y-3">
@@ -328,12 +338,16 @@ export default function ReservationPage() {
               
               <div className="pt-4">
                 <Button 
-                  className="w-full font-headline py-7 text-xl bg-green-600 hover:bg-green-700 shadow-lg shadow-green-900/20" 
+                  className="w-full font-headline py-7 text-xl bg-green-600 hover:bg-green-700 shadow-lg shadow-green-900/20 active:scale-95 transition-transform" 
                   size="lg"
                   disabled={isSubmitting || !selectedTableId || isUserLoading}
                   onClick={handleBooking}
                 >
-                  {isSubmitting ? "Securing Table..." : (
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="animate-spin h-5 w-5" /> Processing...
+                    </span>
+                  ) : (
                     <span className="flex items-center gap-3">
                       <CreditCard className="h-6 w-6" /> Confirm & Book
                     </span>
@@ -342,7 +356,7 @@ export default function ReservationPage() {
                 <div className="flex items-center justify-center gap-2 mt-6">
                   <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
                   <p className="text-[10px] text-center text-green-700 uppercase tracking-[0.2em] font-black">
-                    Secure Payment Gateway
+                    Secure Indian Payment
                   </p>
                   <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
                 </div>

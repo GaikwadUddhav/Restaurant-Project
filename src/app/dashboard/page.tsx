@@ -115,14 +115,14 @@ export default function DashboardPage() {
         <TabsContent value="orders">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <Utensils className="h-5 w-5 text-primary" /> Active Food Orders
+              <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                <Utensils className="h-5 w-5" /> Active Food Orders
               </CardTitle>
               <CardDescription>Real-time Indian cuisine delivery management.</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingOrders ? (
-                <p className="text-center py-10">Loading orders...</p>
+                <div className="text-center py-10"><Loader2 className="animate-spin h-6 w-6 mx-auto mb-2" />Loading orders...</div>
               ) : orders?.length === 0 ? (
                 <p className="text-center py-10 text-muted-foreground italic">No orders placed yet.</p>
               ) : (
@@ -141,12 +141,13 @@ export default function DashboardPage() {
                       <TableRow key={order.id}>
                         <TableCell className="font-medium">{order.id}</TableCell>
                         <TableCell>{new Date(order.orderDateTime).toLocaleDateString()}</TableCell>
-                        <TableCell>${order.totalAmount}</TableCell>
+                        <TableCell className="font-bold text-primary">${order.totalAmount}</TableCell>
                         <TableCell>
                           <Badge className={cn(
-                            order.status === "Delivered" ? "bg-green-100 text-green-700" :
-                            order.status === "Out for Delivery" ? "bg-blue-100 text-blue-700" :
-                            "bg-yellow-100 text-yellow-700"
+                            "font-bold uppercase tracking-tighter text-[10px]",
+                            order.status === "Delivered" ? "bg-green-600 text-white" :
+                            order.status === "Out for Delivery" ? "bg-blue-600 text-white" :
+                            "bg-yellow-500 text-white"
                           )}>
                             {order.status}
                           </Badge>
@@ -160,7 +161,7 @@ export default function DashboardPage() {
                               <Button size="sm" onClick={() => updateOrderStatus(order.customerId, order.id, "Out for Delivery")}>Ship</Button>
                             )}
                             {order.status === "Out for Delivery" && (
-                              <Button size="sm" variant="outline" onClick={() => updateOrderStatus(order.customerId, order.id, "Delivered")}>Complete</Button>
+                              <Button size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50" onClick={() => updateOrderStatus(order.customerId, order.id, "Delivered")}>Complete</Button>
                             )}
                             {order.status === "Delivered" && (
                               <CheckCircle className="h-5 w-5 text-green-600 ml-4" />
@@ -179,14 +180,14 @@ export default function DashboardPage() {
         <TabsContent value="bookings">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" /> Reservation Requests
+              <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                <Calendar className="h-5 w-5" /> Reservation Requests
               </CardTitle>
               <CardDescription>Manage Patil Table seating and booking fees.</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingReservations ? (
-                <p className="text-center py-10">Loading reservations...</p>
+                <div className="text-center py-10"><Loader2 className="animate-spin h-6 w-6 mx-auto mb-2" />Loading bookings...</div>
               ) : reservations?.length === 0 ? (
                 <p className="text-center py-10 text-muted-foreground italic">No reservations booked yet.</p>
               ) : (
@@ -196,33 +197,37 @@ export default function DashboardPage() {
                       <TableHead>ID</TableHead>
                       <TableHead>Schedule</TableHead>
                       <TableHead>Guests</TableHead>
-                      <TableHead>Table ID</TableHead>
+                      <TableHead>Table Number</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {reservations?.map((booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell>{booking.id}</TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <p>{new Date(booking.reservationDateTime).toLocaleDateString()}</p>
-                            <p className="text-muted-foreground flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> {new Date(booking.reservationDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{booking.numberOfGuests}</TableCell>
-                        <TableCell className="font-mono text-xs">{booking.tableId}</TableCell>
-                        <TableCell>
-                          <Badge className={cn(
-                            booking.status === "Confirmed" ? "bg-green-100 text-green-700" : "bg-muted"
-                          )}>
-                            {booking.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {reservations?.map((booking) => {
+                      const table = tables?.find(t => t.id === booking.tableId);
+                      return (
+                        <TableRow key={booking.id}>
+                          <TableCell className="font-mono text-xs">{booking.id}</TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <p className="font-bold">{new Date(booking.reservationDateTime).toLocaleDateString()}</p>
+                              <p className="text-muted-foreground flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> {new Date(booking.reservationDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>{booking.numberOfGuests} Guests</TableCell>
+                          <TableCell className="font-bold text-primary">{table?.tableNumber || "N/A"}</TableCell>
+                          <TableCell>
+                            <Badge className={cn(
+                              "font-bold uppercase tracking-tighter text-[10px]",
+                              booking.status === "Confirmed" ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"
+                            )}>
+                              {booking.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               )}
@@ -234,22 +239,22 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-1">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                  <Plus className="h-5 w-5 text-primary" /> Add New Table
+                <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                  <Plus className="h-5 w-5" /> Add New Table
                 </CardTitle>
-                <CardDescription>Define table capacity and numbers for Patil Table.</CardDescription>
+                <CardDescription>Register your restaurant's physical seating.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Table Number/Name</Label>
+                  <Label>Table Label</Label>
                   <Input 
-                    placeholder="e.g., Table 12, Booth A" 
+                    placeholder="e.g., Table 7, Booth C" 
                     value={newTable.tableNumber}
                     onChange={e => setNewTable({...newTable, tableNumber: e.target.value})}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Capacity (Guests)</Label>
+                  <Label>Max Seating Capacity</Label>
                   <Input 
                     type="number"
                     value={newTable.capacity}
@@ -257,16 +262,16 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Description</Label>
+                  <Label>Description/Location</Label>
                   <Input 
-                    placeholder="e.g., Window seat, Quiet corner" 
+                    placeholder="e.g., Near window, Quiet area" 
                     value={newTable.description}
                     onChange={e => setNewTable({...newTable, description: e.target.value})}
                   />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-green-600 hover:bg-green-700" onClick={handleAddTable} disabled={isAddingTable}>
+                <Button className="w-full bg-primary hover:bg-primary/90" onClick={handleAddTable} disabled={isAddingTable}>
                   {isAddingTable ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
                   Register Table
                 </Button>
@@ -275,18 +280,18 @@ export default function DashboardPage() {
 
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                  <LayoutGrid className="h-5 w-5 text-primary" /> Floor Plan Management
+                <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
+                  <LayoutGrid className="h-5 w-5" /> Floor Plan Overview
                 </CardTitle>
-                <CardDescription>Current seating available for Indian dining reservations.</CardDescription>
+                <CardDescription>Green = Currently Booked, White = Available for selection.</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingTables ? (
-                  <p className="text-center py-10">Loading floor plan...</p>
+                  <div className="text-center py-10"><Loader2 className="animate-spin h-6 w-6 mx-auto mb-2" />Loading floor plan...</div>
                 ) : tables?.length === 0 ? (
                   <div className="text-center py-20 border-2 border-dashed rounded-3xl">
                     <LayoutGrid className="h-12 w-12 mx-auto text-muted mb-4 opacity-20" />
-                    <p className="text-muted-foreground italic">No tables defined in Patil Table floor plan yet.</p>
+                    <p className="text-muted-foreground italic">No tables defined yet. Start by adding one!</p>
                   </div>
                 ) : (
                   <Table>
@@ -294,7 +299,6 @@ export default function DashboardPage() {
                       <TableRow>
                         <TableHead>Table</TableHead>
                         <TableHead>Capacity</TableHead>
-                        <TableHead>Features</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Action</TableHead>
                       </TableRow>
@@ -306,13 +310,12 @@ export default function DashboardPage() {
                           <TableRow key={table.id} className={cn(isBooked ? "bg-green-50/50" : "bg-white")}>
                             <TableCell className="font-bold text-primary">{table.tableNumber}</TableCell>
                             <TableCell>{table.capacity} People</TableCell>
-                            <TableCell className="text-xs italic text-muted-foreground">{table.description || "-"}</TableCell>
                             <TableCell>
                               <Badge 
                                 variant={isBooked ? "default" : "outline"} 
                                 className={cn(
                                   "font-bold uppercase tracking-tighter text-[10px]",
-                                  isBooked ? "bg-green-600 border-green-600" : "bg-white text-muted-foreground border-muted-foreground/30"
+                                  isBooked ? "bg-green-600 border-green-600 text-white" : "bg-white text-muted-foreground border-muted-foreground/30"
                                 )}
                               >
                                 {isBooked ? (
@@ -342,7 +345,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                <CardTitle className="font-headline text-2xl flex items-center gap-2 text-primary">
                   <Sparkles className="h-5 w-5 text-secondary" /> AI Menu Description Tool
                 </CardTitle>
                 <CardDescription>Generate enticing Indian menu descriptions.</CardDescription>
