@@ -16,9 +16,9 @@ const menuItems = [
   { id: 3, name: "Hyderabadi Biryani", price: 20, category: "Main Course", image: "food-biryani", description: "Long-grain basmati rice cooked with aromatic spices and tender chicken." },
   { id: 4, name: "Gulab Jamun", price: 8, category: "Desserts", image: "food-dessert", description: "Soft, deep-fried milk solids soaked in cardamom-flavored sugar syrup." },
   { id: 5, name: "Mango Lassi", price: 6, category: "Drinks", image: "food-lassi", description: "A creamy and refreshing yogurt-based drink with sweet mango pulp." },
-  { id: 6, name: "Dal Makhani", price: 14, category: "Main Course", image: "food-paneer-tikka", description: "Slow-cooked black lentils with cream and spices for a buttery finish." },
-  { id: 7, name: "Garlic Naan", price: 4, category: "Sides", image: "table-setting", description: "Soft, leavened flatbread brushed with fresh garlic and butter." },
-  { id: 8, name: "Vegetable Samosa", price: 7, category: "Starters", image: "table-setting", description: "Crispy pastry filled with spiced potatoes and green peas." },
+  { id: 6, name: "Dal Makhani", price: 14, category: "Main Course", image: "food-dal-makhani", description: "Slow-cooked black lentils with cream and spices for a buttery finish." },
+  { id: 7, name: "Garlic Naan", price: 4, category: "Sides", image: "food-naan", description: "Soft, leavened flatbread brushed with fresh garlic and butter." },
+  { id: 8, name: "Vegetable Samosa", price: 7, category: "Starters", image: "food-samosa", description: "Crispy pastry filled with spiced potatoes and green peas." },
 ];
 
 const categories = ["All", "Starters", "Main Course", "Desserts", "Drinks", "Sides"];

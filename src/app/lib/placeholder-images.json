@@ -4,43 +4,61 @@
     {
       "id": "hero-restaurant",
       "description": "Elegant Indian restaurant interior with warm lighting and ethnic decor",
-      "imageUrl": "https://picsum.photos/seed/indian-restaurant/1200/600",
+      "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200",
       "imageHint": "indian restaurant"
     },
     {
       "id": "food-butter-chicken",
       "description": "Creamy Butter Chicken with fresh cilantro",
-      "imageUrl": "https://picsum.photos/seed/butter-chicken/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?q=80&w=600",
       "imageHint": "butter chicken"
     },
     {
       "id": "food-paneer-tikka",
       "description": "Grilled Paneer Tikka with bell peppers",
-      "imageUrl": "https://picsum.photos/seed/paneer-tikka/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?q=80&w=600",
       "imageHint": "paneer tikka"
     },
     {
       "id": "food-biryani",
       "description": "Fragrant Hyderabadi Chicken Biryani",
-      "imageUrl": "https://picsum.photos/seed/biryani/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=600",
       "imageHint": "chicken biryani"
     },
     {
       "id": "food-dessert",
       "description": "Sweet Gulab Jamun in syrup",
-      "imageUrl": "https://picsum.photos/seed/gulab-jamun/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1617013451942-441bbba35a5e?q=80&w=600",
       "imageHint": "gulab jamun"
     },
     {
       "id": "food-lassi",
       "description": "Refreshing Mango Lassi with saffron",
-      "imageUrl": "https://picsum.photos/seed/mango-lassi/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?q=80&w=600",
       "imageHint": "mango lassi"
+    },
+    {
+      "id": "food-dal-makhani",
+      "description": "Slow cooked black lentils with cream",
+      "imageUrl": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=600",
+      "imageHint": "dal makhani"
+    },
+    {
+      "id": "food-naan",
+      "description": "Freshly baked garlic naan",
+      "imageUrl": "https://images.unsplash.com/photo-1601303516536-257c19fce860?q=80&w=600",
+      "imageHint": "garlic naan"
+    },
+    {
+      "id": "food-samosa",
+      "description": "Crispy vegetable samosas",
+      "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4709a?q=80&w=600",
+      "imageHint": "vegetable samosa"
     },
     {
       "id": "table-setting",
       "description": "Traditional Indian brass thali setting",
-      "imageUrl": "https://picsum.photos/seed/indian-table/600/400",
+      "imageUrl": "https://images.unsplash.com/photo-1585937421612-7110052f5fbc?q=80&w=600",
       "imageHint": "indian dining"
     }
   ]
