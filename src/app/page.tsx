@@ -9,6 +9,7 @@ export default function Home() {
   const heroImg = PlaceHolderImages.find(img => img.id === "hero-restaurant");
   const butterChickenImg = PlaceHolderImages.find(img => img.id === "food-butter-chicken");
   const biryaniImg = PlaceHolderImages.find(img => img.id === "food-biryani");
+  const paneerTikkaImg = PlaceHolderImages.find(img => img.id === "food-paneer-tikka");
 
   return (
     <div className="flex flex-col">
@@ -20,7 +21,7 @@ export default function Home() {
           fill
           className="object-cover opacity-80"
           priority
-          data-ai-hint="indian restaurant interior"
+          data-ai-hint="indian restaurant"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
         <div className="relative z-10 text-center text-white px-4 max-w-4xl">
@@ -66,7 +67,7 @@ export default function Home() {
               description="Fragrant basmati rice layered with saffron, mint, and marinated chicken."
             />
              <FeaturedCard 
-              image={PlaceHolderImages.find(img => img.id === "food-paneer-tikka")?.imageUrl || ""} 
+              image={paneerTikkaImg?.imageUrl || ""} 
               title="Smoky Paneer Tikka" 
               price="$16" 
               description="Fresh cottage cheese marinated in hung curd and spices, grilled in a charcoal tandoor."
@@ -106,7 +107,7 @@ export default function Home() {
                 alt="Patil Table Indian Setting"
                 fill
                 className="object-cover"
-                data-ai-hint="indian table setting"
+                data-ai-hint="indian dining"
               />
             </div>
           </div>
@@ -125,7 +126,7 @@ function FeaturedCard({ image, title, price, description }: { image: string, tit
           alt={title} 
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-500"
-          data-ai-hint="indian food dish"
+          data-ai-hint="indian food"
         />
         <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full font-headline">
           {price}

@@ -2,45 +2,45 @@
   "placeholderImages": [
     {
       "id": "hero-restaurant",
-      "description": "Elegant restaurant interior with warm lighting",
-      "imageUrl": "https://images.unsplash.com/photo-1667388969250-1c7220bf3f37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXN0YXVyYW50JTIwaW50ZXJpb3J8ZW58MHx8fHwxNzcyMjU4MTg0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "restaurant interior"
+      "description": "Elegant Indian restaurant interior with warm lighting and ethnic decor",
+      "imageUrl": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxpbmRpYW4lMjByZXN0YXVyYW50fGVufDB8fHx8MTc3MjM1NTE1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "indian restaurant"
     },
     {
-      "id": "food-pasta",
-      "description": "Gourmet truffle pasta with parmesan",
-      "imageUrl": "https://images.unsplash.com/photo-1729875746931-c5edc5ec6468?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dHJ1ZmZsZSUyMHBhc3RhfGVufDB8fHx8MTc3MjIwODkwOHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "truffle pasta"
+      "id": "food-butter-chicken",
+      "description": "Creamy Butter Chicken with fresh cilantro",
+      "imageUrl": "https://images.unsplash.com/photo-1584949602334-4e99f98286a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YnV0dGVyJTIwY2hpY2tlbnxlbnwwfHx8fDE3NzIzNTUxNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "butter chicken"
     },
     {
-      "id": "food-steak",
-      "description": "Seared ribeye steak with rosemary",
-      "imageUrl": "https://images.unsplash.com/photo-1690983322025-aab4f95a0269?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxyaWJleWUlMjBzdGVha3xlbnwwfHx8fDE3NzIzMDMzNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "ribeye steak"
+      "id": "food-paneer-tikka",
+      "description": "Grilled Paneer Tikka with bell peppers",
+      "imageUrl": "https://images.unsplash.com/photo-1690369642707-3d30e6f7fdcb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGFuZWVyJTIwdGlra2F8ZW58MHx8fHwxNzcyMzU1MTU1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "paneer tikka"
     },
     {
-      "id": "food-salad",
-      "description": "Fresh mediterranean salad with feta",
-      "imageUrl": "https://images.unsplash.com/photo-1599021419847-d8a7a6aba5b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmVlayUyMHNhbGFkfGVufDB8fHx8MTc3MjMwMzM1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "greek salad"
+      "id": "food-biryani",
+      "description": "Fragrant Hyderabadi Chicken Biryani",
+      "imageUrl": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjaGlja2VuJTIwYmlyeWFuaXxlbnwwfHx8fDE3NzIzNTUxNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chicken biryani"
     },
     {
       "id": "food-dessert",
-      "description": "Chocolate lava cake with berries",
-      "imageUrl": "https://images.unsplash.com/photo-1626263468007-a9e0cf83f1ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaG9jb2xhdGUlMjBjYWtlfGVufDB8fHx8MTc3MjIxODc1OHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "chocolate cake"
+      "description": "Sweet Gulab Jamun in syrup",
+      "imageUrl": "https://images.unsplash.com/photo-1617013451942-441bbba35a5e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxndWxhYiUyMGphbXVufGVufDB8fHx8MTc3MjM1NTE1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gulab jamun"
     },
     {
-      "id": "food-cocktail",
-      "description": "Signature hibiscus cocktail",
-      "imageUrl": "https://images.unsplash.com/photo-1614285344553-fbb89a8e68ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjcmFmdCUyMGNvY2t0YWlsfGVufDB8fHx8MTc3MjMwMzM1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "craft cocktail"
+      "id": "food-lassi",
+      "description": "Refreshing Mango Lassi with saffron",
+      "imageUrl": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW5nbyUyMGxhc3NpfGVufDB8fHx8MTc3MjM1NTE1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mango lassi"
     },
     {
       "id": "table-setting",
-      "description": "Elegant table setting with linen",
-      "imageUrl": "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkaW5pbmclMjB0YWJsZXxlbnwwfHx8fDE3NzIzMDMzNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "dining table"
+      "description": "Traditional Indian brass thali setting",
+      "imageUrl": "https://images.unsplash.com/photo-1690692528270-8f7cb8176dfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxpbmRpYW4lMjBkaW5pbmd8ZW58MHx8fHwxNzcyMzU1MTU2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "indian dining"
     }
   ]
 }
