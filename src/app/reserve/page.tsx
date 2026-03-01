@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, CalendarDays, CheckCircle2, Users, UtensilsCrossed, AlertCircle, Loader2, Smartphone, ShieldCheck, QrCode } from "lucide-react";
-import { Separator } from "@/separator";
+import { Separator } from "@/components/ui/separator";
 import { useCollection, useUser, useFirestore, useMemoFirebase, setDocumentNonBlocking } from "@/firebase";
 import { collection, collectionGroup, doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
@@ -31,28 +31,24 @@ export default function ReservationPage() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'done'>('idle');
 
   const UPI_ID = "8010341919@ybl";
-  const BOOKING_FEE = 500; // Updated to INR
+  const BOOKING_FEE = 500; // INR
 
-  // Initialize date on client to avoid hydration mismatch
   useEffect(() => {
     setDate(new Date());
   }, []);
 
-  // Fetch all tables
   const tablesQuery = useMemoFirebase(() => {
     if (!db) return null;
     return collection(db, "restaurantTables");
   }, [db]);
   const { data: allTables, isLoading: isLoadingTables } = useCollection(tablesQuery);
 
-  // Fetch all reservations to check real-time availability
   const reservationsQuery = useMemoFirebase(() => {
     if (!db) return null;
     return collectionGroup(db, "reservations");
   }, [db]);
   const { data: allReservations } = useCollection(reservationsQuery);
 
-  // Calculate selection ISO string for checking availability
   const currentSelectionIso = useMemo(() => {
     if (!date || !time) return null;
     const selectedDateTime = new Date(date);
@@ -61,7 +57,6 @@ export default function ReservationPage() {
     return selectedDateTime.toISOString();
   }, [date, time]);
 
-  // Filter tables based on guest count and availability
   const displayTables = useMemo(() => {
     const tablesToUse = allTables && allTables.length > 0 ? allTables : Array.from({ length: 15 }, (_, i) => ({
       id: `table-v-${i + 1}`,
@@ -107,7 +102,6 @@ export default function ReservationPage() {
   const handlePaymentComplete = () => {
     setPaymentStatus('processing');
     
-    // Simulate payment verification
     setTimeout(() => {
       completeReservation();
     }, 2000);
@@ -121,7 +115,6 @@ export default function ReservationPage() {
     const paymentId = `PAY-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
     const transactionId = `TXN-${Date.now()}`;
 
-    // 1. Create Reservation
     const reservationRef = doc(db, "customerProfiles", user.uid, "reservations", reservationId);
     const reservationData = {
       id: reservationId,
@@ -136,7 +129,6 @@ export default function ReservationPage() {
       createdAt: new Date().toISOString()
     };
 
-    // 2. Create Payment Record
     const paymentRef = doc(db, "payments", paymentId);
     const paymentData = {
       id: paymentId,
@@ -377,7 +369,6 @@ export default function ReservationPage() {
         </div>
       </div>
 
-      {/* Payment Modal */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
