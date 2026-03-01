@@ -56,6 +56,48 @@
       "imageHint": "vegetable samosa"
     },
     {
+      "id": "food-tikka",
+      "description": "Tandoori Chicken Tikka",
+      "imageUrl": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=600",
+      "imageHint": "chicken tikka"
+    },
+    {
+      "id": "food-rogan-josh",
+      "description": "Tender Lamb Rogan Josh",
+      "imageUrl": "https://images.unsplash.com/photo-1545247181-516773cae754?q=80&w=600",
+      "imageHint": "lamb curry"
+    },
+    {
+      "id": "food-kofta",
+      "description": "Rich Malai Kofta curry",
+      "imageUrl": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?q=80&w=600",
+      "imageHint": "malai kofta"
+    },
+    {
+      "id": "food-rasmalai",
+      "description": "Creamy Rasmalai dessert",
+      "imageUrl": "https://images.unsplash.com/photo-1632704870138-08579d924190?q=80&w=600",
+      "imageHint": "rasmalai"
+    },
+    {
+      "id": "food-chai",
+      "description": "Hot Masala Chai",
+      "imageUrl": "https://images.unsplash.com/photo-1571934811356-5cc561b6821f?q=80&w=600",
+      "imageHint": "masala chai"
+    },
+    {
+      "id": "food-rice",
+      "description": "Fragrant Steamed Basmati Rice",
+      "imageUrl": "https://images.unsplash.com/photo-1512058560366-cd2427ff0a59?q=80&w=600",
+      "imageHint": "basmati rice"
+    },
+    {
+      "id": "food-kabab",
+      "description": "Green Hara Bhara Kabab",
+      "imageUrl": "https://images.unsplash.com/photo-1599307767316-776533bb941c?q=80&w=600",
+      "imageHint": "hara bhara kabab"
+    },
+    {
       "id": "table-setting",
       "description": "Traditional Indian brass thali setting",
       "imageUrl": "https://images.unsplash.com/photo-1585937421612-7110052f5fbc?q=80&w=600",
