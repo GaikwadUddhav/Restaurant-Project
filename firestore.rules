@@ -23,18 +23,13 @@ service cloud.firestore {
     }
 
     function isRestaurantOwner() {
-      // For the prototype phase with anonymous auth, we treat signed-in users 
-      // as capable of managing the dashboard if they are testing the app.
-      // In production, this would be restricted to specific UIDs in appRoles_owner.
+      // In prototyping, signed-in users (including anonymous) are granted 
+      // broad dashboard access to facilitate easy testing of features.
       return isSignedIn();
     }
 
     function isExistingOwner(userId) {
       return resource != null && isOwner(userId);
-    }
-
-    function isExistingRestaurantOwner() {
-      return resource != null && isRestaurantOwner();
     }
 
     // --- COLLECTION RULES ---
@@ -83,9 +78,9 @@ service cloud.firestore {
     }
 
     match /payments/{paymentId} {
-      allow get: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isRestaurantOwner();
+      allow get: if (isSignedIn() && (resource.data.customerId == request.auth.uid)) || isRestaurantOwner();
       allow list: if isRestaurantOwner();
-      allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+      allow create: if isSignedIn() && (request.resource.data.customerId == request.auth.uid);
       allow update, delete: if isRestaurantOwner();
     }
 
@@ -97,12 +92,12 @@ service cloud.firestore {
 
     // --- COLLECTION GROUP RULES ---
     
-    // Allows collection group queries on reservations (for availability checks and dashboard)
+    // Explicitly allow collection group queries for reservations and orders
+    // required for the Owner Dashboard and availability checks.
     match /{path=**}/reservations/{reservationId} {
       allow get, list: if isSignedIn();
     }
 
-    // Allows collection group queries on foodOrders (for dashboard management)
     match /{path=**}/foodOrders/{foodOrderId} {
       allow get, list: if isSignedIn();
     }
